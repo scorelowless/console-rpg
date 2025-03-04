@@ -1,4 +1,4 @@
-namespace ProjOb.Weapon;
+namespace ProjOb;
 
 public class OneHandedWeapon : Weapon
 {

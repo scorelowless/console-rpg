@@ -5,7 +5,6 @@ namespace ProjOb;
 public class Player : Entity
 {
     private const int InventorySize = 20;
-    public Item[] Inventory { get; set; }
     public int SelectedItem { get; set; }
     public Currency[] Currencies { get; set; }
 
