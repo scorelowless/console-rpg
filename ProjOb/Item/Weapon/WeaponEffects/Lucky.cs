@@ -8,11 +8,4 @@ public class Lucky : EffectWeapon
         WhenGrabbed = () => Weapon.Owner!.Stats[AttributeName.Luck] += Value;
         WhenUngrabbed = () => Weapon.Owner!.Stats[AttributeName.Luck] -= Value;
     }
-
-    public override Weapon RemoveEffect()
-    {
-        if(IsHeld)
-            WhenUngrabbed();
-        return base.RemoveEffect();
-    }
 }

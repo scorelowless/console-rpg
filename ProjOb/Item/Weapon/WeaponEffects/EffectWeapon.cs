@@ -12,12 +12,12 @@ public abstract class EffectWeapon : Weapon
     {
         Weapon = weapon;
         _effectName = effectName;
-        WhenGrabbed = () => { };
-        WhenUngrabbed = () => { };
     }
 
     public virtual Weapon RemoveEffect()
     {
+        if(IsHeld)
+            WhenUngrabbed();
         return Weapon;
     }
 }
