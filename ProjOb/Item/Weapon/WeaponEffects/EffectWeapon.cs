@@ -3,12 +3,21 @@ namespace ProjOb.WeaponEffects;
 public abstract class EffectWeapon : Weapon
 {
     protected Weapon Weapon;
-    protected readonly string EffectName;
-    public override string Name => Weapon.Name + EffectName;
+    private readonly string _effectName;
+    public override string Name => Weapon.Name + _effectName;
+    protected Action WhenGrabbed;
+    protected Action WhenUngrabbed;
 
     public EffectWeapon(Weapon weapon, string effectName)
     {
         Weapon = weapon;
-        EffectName = effectName;
+        _effectName = effectName;
+        WhenGrabbed = () => { };
+        WhenUngrabbed = () => { };
+    }
+
+    public virtual Weapon RemoveEffect()
+    {
+        return Weapon;
     }
 }

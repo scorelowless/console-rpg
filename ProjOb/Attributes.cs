@@ -2,7 +2,7 @@ namespace ProjOb;
 
 public class Attributes
 {
-    private Dictionary<AttributeName, int> _attributes = new()
+    private readonly Dictionary<AttributeName, int> _attributes = new()
     {
         { AttributeName.Power, 0 },
         { AttributeName.Agility, 0 },
