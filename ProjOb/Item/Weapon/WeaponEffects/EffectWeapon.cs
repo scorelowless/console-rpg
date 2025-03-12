@@ -1,12 +1,28 @@
 namespace ProjOb.WeaponEffects;
 
-public abstract class EffectWeapon : Weapon
+public abstract class EffectWeapon : IWeapon
 {
     protected Weapon Weapon;
     private readonly string _effectName;
-    public override string Name => Weapon.Name + _effectName;
-    protected Action WhenGrabbed;
-    protected Action WhenUngrabbed;
+    protected Action OnGrabCustom = () => { };
+    protected Action OnUngrabCustom = () => { };
+
+    public Entity? Owner
+    {
+        get => Weapon.Owner;
+        set => Weapon.Owner = value;
+    }
+    public Action OnGrab => Weapon.OnGrab + OnGrabCustom;
+    public Action OnUngrab => Weapon.OnUngrab + OnUngrabCustom;
+    public bool IsHeld
+    {
+        get => Weapon.IsHeld;
+        set => Weapon.IsHeld = value;
+    }
+    public int HandsTaken => Weapon.HandsTaken;
+    public virtual int Damage => Weapon.Damage;
+    public string Name => Weapon.Name + _effectName;
+
 
     public EffectWeapon(Weapon weapon, string effectName)
     {
@@ -16,8 +32,6 @@ public abstract class EffectWeapon : Weapon
 
     public virtual Weapon RemoveEffect()
     {
-        if(IsHeld)
-            WhenUngrabbed();
         return Weapon;
     }
 }

@@ -1,18 +1,11 @@
 namespace ProjOb;
 
-public class Weapon : Item, IHeldable
+public abstract class Weapon : Item, IWeapon
 {
     public Entity? Owner { get; set; }
+    public Action OnGrab { get; protected set; } = () => { };
+    public Action OnUngrab { get; protected set; } = () => { };
     public bool IsHeld { get; set; }
     
-    public virtual int Damage { get; init; }
-    public virtual void Grab()
-    {
-        throw new NotImplementedException();
-    }
-
-    public virtual void Ungrab()
-    {
-        throw new NotImplementedException();
-    }
+    public int Damage { get; protected set; }
 }
