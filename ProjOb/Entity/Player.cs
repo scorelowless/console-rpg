@@ -10,7 +10,7 @@ public class Player : Entity
 
     public Player(Map map) : base(map)
     {
-        HeldItems = new IHeldable[2]; // 0 - left hand, 1 - right hand
+        HeldItems = new List<IHeldable>(2); // 0 - left hand, 1 - right hand
         Position = new Point(0, 0);
         Inventory = new Item[InventorySize];
         Currencies = new Currency[2];

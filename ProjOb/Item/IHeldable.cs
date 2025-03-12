@@ -2,7 +2,9 @@ namespace ProjOb;
 
 public interface IHeldable
 {
+    public int HandsTaken { get; }
     Entity? Owner { get; }
-    void Grab();
-    void Ungrab();
+    bool IsHeld { get; set; }
+    Action OnGrab { get; }
+    Action OnUngrab { get; }
 }

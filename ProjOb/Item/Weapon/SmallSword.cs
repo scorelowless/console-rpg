@@ -1,6 +1,6 @@
 namespace ProjOb;
 
-public class SmallSword : OneHandedWeapon
+public class SmallSword : Weapon
 {
     
 }
