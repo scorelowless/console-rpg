@@ -4,7 +4,7 @@ namespace ProjOb;
 
 public class Bottle : Item
 {
-    public Bottle(Point position) : base(position,  "Bottle", 'b')
+    public Bottle(Tile? position) : base( "Bottle", 'b', position)
     {
     }
 }

@@ -2,42 +2,81 @@ using System.Drawing;
 
 namespace ProjOb;
 
-public class Entity : IMappable
+public abstract class Entity : IMappable
 {
-    public Point Position { get; set; }
+    public string Name { get; set; }
+    public Action<Entity> OnPickUp { get; } = _ => { };
+    public Action<Entity> OnThrow { get; } = _ => { };
+    public Tile Position { get; set; }
     public char Display { get; set; }
-    public Map Map { get; set; }
-    public Attributes Stats { get; set; } = new();
-    public List<IHeldable> HeldItems { get; set; } = [];
-    private int _numberOfHands;
-    private int _usedHands;
+    public Dictionary<string, int> Stats { get; }
+    
+    public IWeapon?[] HeldItems { get; }
+    public bool[] IsHandTaken { get; }
 
-    public Item[] Inventory { get; set; } = [];
+    public IMappable?[] Inventory { get; set; } = [];
 
-    public Entity(Map map)
+    protected Entity(string name, Tile position)
     {
-        Map = map;
-        _numberOfHands = 2;
-        _usedHands = 0;
+        Name = name;
+        Position = position;
+        position.Add(this);
+        IsHandTaken = [false, false];
+        HeldItems = [null, null];
+        Stats = new Dictionary<string, int>
+        {
+            { "Power", 10 },
+            { "Agility", 10 },
+            { "Health", 10 },
+            { "Luck", 10 },
+            { "Aggression", 10 },
+            { "Wisdom", 10 }
+        };
     }
 
-    public void Grab(IHeldable heldable)
+    protected bool Grab(IWeapon heldable)
     {
-        if (_usedHands + heldable.HandsTaken >= _numberOfHands)
-            return;
-        _usedHands += heldable.HandsTaken;
-        HeldItems.Add(heldable);
+        if (IsHandTaken[0] && IsHandTaken[1]) return false;
+        if ((IsHandTaken[0] || IsHandTaken[1]) && heldable.HandsTaken == 2) return false;
+        if (heldable.HandsTaken == 2)
+        {
+            IsHandTaken[0] = true;
+            IsHandTaken[1] = true;
+            HeldItems[0] =  heldable;
+            HeldItems[1] =  heldable;
+        }
+        else
+        {
+            if (IsHandTaken[0])
+            {
+                IsHandTaken[1] = true;
+                HeldItems[1] = heldable;
+            }
+            else
+            {
+                IsHandTaken[0] = true;
+                HeldItems[0] = heldable;
+            }
+        }
         heldable.OnGrab();
-        heldable.IsHeld = true;
+        return true;
     }
 
-    public void Ungrab(IHeldable heldable)
+    public void Ungrab(IWeapon heldable)
     {
         if (!HeldItems.Contains(heldable))
             return;
-        HeldItems.Remove(heldable);
+        if (HeldItems[0] == heldable)
+        {
+            HeldItems[0] = null;
+            IsHandTaken[0] = false;
+        }
+        if (HeldItems[1] == heldable)
+        {
+            HeldItems[1] = null;
+            IsHandTaken[1] = false;
+        }
         heldable.OnUngrab();
-        heldable.IsHeld = false;
     }
     
 }

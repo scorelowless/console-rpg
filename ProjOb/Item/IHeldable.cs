@@ -7,4 +7,5 @@ public interface IHeldable
     bool IsHeld { get; set; }
     Action OnGrab { get; }
     Action OnUngrab { get; }
+    string Name { get; }
 }

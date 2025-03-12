@@ -2,16 +2,18 @@ using System.Drawing;
 
 namespace ProjOb;
 
-public class Item : IMappable
+public abstract class Item : IMappable
 {
-    public Point Position { get; set; }
+    public Tile? Position { get; set; }
     public char Display { get; set; }
-    public virtual string Name { get; init; }
+    public string Name { get; init; }
+    public Action<Entity> OnPickUp { get; protected init; } = _ => { };
+    public Action<Entity> OnThrow { get; protected init; } = _ => { };
 
-    public Item(Point position = default, string name = "NONAME", char display = '¿')
+    protected Item(string name, char display, Tile? position = null)
     {
+        Position = position;
         Name = name;
         Display = display;
-        Position = position;
     }
 }

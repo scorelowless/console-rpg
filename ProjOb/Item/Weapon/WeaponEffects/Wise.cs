@@ -3,9 +3,9 @@ namespace ProjOb.WeaponEffects;
 public class Wise : EffectWeapon
 {
     private const int Value = 5;
-    public Wise(Weapon weapon) : base(weapon, " (Wise)")
+    public Wise(IWeapon weapon) : base(weapon, " (Wise)")
     {
-        OnGrabCustom = () => Weapon.Owner!.Stats[AttributeName.Wisdom] += Value;
-        OnUngrabCustom = () => Weapon.Owner!.Stats[AttributeName.Wisdom] -= Value;
+        OnGrabCustom = () => Weapon.Owner!.Stats["Wisdom"] += Value;
+        OnUngrabCustom = () => Weapon.Owner!.Stats["Wisdom"] -= Value;
     }
 }
