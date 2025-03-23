@@ -5,7 +5,11 @@ public class Wise : EffectWeapon
     private const int Value = 5;
     public Wise(IWeapon weapon) : base(weapon, " (Wise)")
     {
-        OnGrabCustom = () => Weapon.Owner!.Stats["Wisdom"] += Value;
-        OnUngrabCustom = () => Weapon.Owner!.Stats["Wisdom"] -= Value;
+        OnUseCustom = () =>
+        {
+            Weapon.Owner!.Stats["Wisdom"] += Value;
+            return (true, this);
+        };
+        OnUnequipCustom = () => Weapon.Owner!.Stats["Wisdom"] -= Value;
     }
 }

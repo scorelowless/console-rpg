@@ -1,7 +1,6 @@
 namespace ProjOb;
 
-public interface IWeapon : IHeldable, IMappable
+public interface IWeapon : IHeldable
 {
     public int Damage { get; }
-    new string Name { get; }
 }

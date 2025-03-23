@@ -1,24 +1,20 @@
-using System.Collections;
 using System.Drawing;
-using System.Text;
 using ProjOb.WeaponEffects;
 
 namespace ProjOb;
 
-public class Map : IEnumerable<string>
+public class Map
 {
     public const int XMapSize = 40;
     public const int YMapSize = 20;
     private readonly Tile[,] _tiles = new Tile[XMapSize, YMapSize];
-    public event Action? OnUpdate;
+    public Tile this[int x, int y] => _tiles[x, y];
+    public event Action<Point>? OnUpdate;
 
     public Map()
     {
         GenerateMap();
     }
-
-    public Tile this[int i, int j] => _tiles[i, j];
-    
     public Tile NextTile(Tile tile, Direction direction)
     {
         Point position = new Point(tile.Position.X, tile.Position.Y);
@@ -48,14 +44,15 @@ public class Map : IEnumerable<string>
         return _tiles[position.X, position.Y];
     }
 
-    public void GenerateMap()
+    private void GenerateMap()
     {
         for (var y = 0; y < YMapSize; y++)
         {
             for (var x = 0; x < XMapSize; x++)
             {
                 _tiles[x,y] = new Tile(this, x % 2 == 0 || y % 2 == 1, new Point(x, y));
-                _tiles[x, y].OnUpdate += () => OnUpdate?.Invoke();
+                int xx = x, yy = y;
+                _tiles[x, y].OnUpdate += () => OnUpdate?.Invoke(new Point(xx, yy));
             }
         }
 
@@ -111,23 +108,5 @@ public class Map : IEnumerable<string>
                 }
             }
         }
-    }
-
-    public IEnumerator<string> GetEnumerator()
-    {
-        for (int y = 0; y < YMapSize; y++)
-        {
-            StringBuilder sb = new();
-            for (int x = 0; x < XMapSize; x++)
-            {
-                sb.Append(_tiles[x, y].Print());
-            }
-            yield return sb.ToString();
-        }
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
     }
 }

@@ -2,17 +2,18 @@
 
 static class Program
 {
-    static bool _isRunning = true;
-    private static readonly Map Map =  new Map();
-    private static readonly Player Player = new Player(Map);
-    private static readonly Display Display = new Display(Map, Player);
+    private static bool _isRunning = true;
+    private static readonly Map Map =  new();
+    private static readonly Player Player = new(Map);
+    private static readonly Display Display = Display.GetInstance(Map, Player);
 
-    private static void Main(string[] args)
+    private static void Main()
     {
         Thread keyListenerThread = new Thread(KeyListener);
         keyListenerThread.Start();
     }
-    static void KeyListener()
+
+    private static void KeyListener()
     {
         while (_isRunning)
         {
@@ -38,7 +39,7 @@ static class Program
                         Player.PickUp();
                         break;
                     case ConsoleKey.R:
-                        Player.Equip();
+                        Player.Use();
                         break;
                     case ConsoleKey.T:
                         Player.Unequip();

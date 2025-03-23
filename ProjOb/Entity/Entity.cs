@@ -1,28 +1,46 @@
-using System.Drawing;
+using System.Collections.Immutable;
+using ProjOb.Currencies;
 
 namespace ProjOb;
 
 public abstract class Entity : IMappable
 {
-    public string Name { get; set; }
-    public Action<Entity> OnPickUp { get; } = _ => { };
-    public Action<Entity> OnThrow { get; } = _ => { };
-    public Tile Position { get; set; }
-    public char Display { get; set; }
-    public Dictionary<string, int> Stats { get; }
+    public string Name { get; }
+    public IItem? ToItem() => null;
+    private Tile _position;
+    private readonly IHeldable?[] _heldItems;
+    protected IItem?[] _inventory;
     
-    public IWeapon?[] HeldItems { get; }
-    public bool[] IsHandTaken { get; }
+    public ICurrency[] Currencies { get; }
 
-    public IMappable?[] Inventory { get; set; } = [];
+    public Tile? Position // TODO: fix nullability issue
+    {
+        get => _position;
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            _position = value;
+        }
+    }
+
+    public char Display { get; init; }
+    public Dictionary<string, int> Stats { get; }
+
+    public ImmutableArray<IHeldable?> HeldItems => [.._heldItems];
+
+    private bool[] IsHandTaken { get; }
+
+    public ImmutableArray<IItem?> Inventory => [.._inventory];
 
     protected Entity(string name, Tile position)
     {
         Name = name;
-        Position = position;
+        _position = position;
         position.Add(this);
         IsHandTaken = [false, false];
-        HeldItems = [null, null];
+        _heldItems = [null, null];
+        _inventory = [];
+        Currencies = [new Money(0, 0), new  Gold(0, 1)];
         Stats = new Dictionary<string, int>
         {
             { "Power", 10 },
@@ -34,7 +52,7 @@ public abstract class Entity : IMappable
         };
     }
 
-    protected bool Grab(IWeapon heldable)
+    protected bool Grab(IHeldable heldable)
     {
         if (IsHandTaken[0] && IsHandTaken[1]) return false;
         if ((IsHandTaken[0] || IsHandTaken[1]) && heldable.HandsTaken == 2) return false;
@@ -42,41 +60,39 @@ public abstract class Entity : IMappable
         {
             IsHandTaken[0] = true;
             IsHandTaken[1] = true;
-            HeldItems[0] =  heldable;
-            HeldItems[1] =  heldable;
+            _heldItems[0] =  heldable;
+            _heldItems[1] =  heldable;
         }
         else
         {
             if (IsHandTaken[0])
             {
                 IsHandTaken[1] = true;
-                HeldItems[1] = heldable;
+                _heldItems[1] = heldable;
             }
             else
             {
                 IsHandTaken[0] = true;
-                HeldItems[0] = heldable;
+                _heldItems[0] = heldable;
             }
         }
-        heldable.OnGrab();
         return true;
     }
 
-    public void Ungrab(IWeapon heldable)
+    protected IHeldable? Ungrab()
     {
-        if (!HeldItems.Contains(heldable))
-            return;
-        if (HeldItems[0] == heldable)
+        var ret = HeldItems[1] != null ?  HeldItems[1] : HeldItems[0];
+        if (HeldItems[0] == ret)
         {
-            HeldItems[0] = null;
+            _heldItems[0] = null;
             IsHandTaken[0] = false;
         }
-        if (HeldItems[1] == heldable)
+        if (HeldItems[1] == ret)
         {
-            HeldItems[1] = null;
+            _heldItems[1] = null;
             IsHandTaken[1] = false;
         }
-        heldable.OnUngrab();
+        return ret;
     }
     
 }

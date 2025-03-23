@@ -6,10 +6,10 @@ namespace ProjOb;
 public class Tile : IEnumerable<IMappable>
 {
     public readonly Map Map;
-    private readonly List<IMappable> _items = [];
-    public Point Position {get; set;}
-    public bool IsWalkable {get; set;}
-    public char Print() => _items.Count == 0 ? (IsWalkable ? ' ' : '\u2588') : _items[^1].Display;
+    private readonly List<IMappable> _contents = [];
+    public Point Position { get; }
+    public bool IsWalkable { get; }
+    public char Print() => _contents.Count == 0 ? (IsWalkable ? ' ' : '\u2588') : _contents[^1].Display;
     public event Action? OnUpdate;
 
     public Tile(Map map, bool isWalkable, Point position)
@@ -21,30 +21,31 @@ public class Tile : IEnumerable<IMappable>
 
     public void Add(IMappable item)
     {
-        _items.Add(item);
+        _contents.Add(item);
         OnUpdate?.Invoke();
     }
 
-    public IMappable? Pick()
+    public IItem? Pick()
     {
-        if (_items.Count > 1)
+        foreach (var item in _contents)
         {
+            if (item.ToItem() == null) continue;
+            _contents.Remove(item);
             OnUpdate?.Invoke();
-            var ret = _items[^2];
-            _items.RemoveAt(_items.Count - 2);
-            return ret;
+            return item.ToItem();
         }
         return null;
     }
 
     public void Remove(IMappable item)
     {
-        _items.Remove(item);
+        _contents.Remove(item);
+        OnUpdate?.Invoke();
     }
     
     public IEnumerator<IMappable> GetEnumerator()
     {
-        return _items.GetEnumerator();
+        return _contents.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

@@ -1,12 +1,9 @@
-using System.Drawing;
-
 namespace ProjOb;
 
 public interface IMappable
 {
-    Tile Position { get; set; }
-    char Display { get; set; }
+    Tile? Position { get; set; }
+    char Display { get; }
     string Name { get; }
-    Action<Entity> OnPickUp { get; }
-    Action<Entity> OnThrow { get; }
+    public IItem? ToItem();
 }

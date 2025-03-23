@@ -7,5 +7,6 @@ public class Strong : EffectWeapon
 
     public Strong(IWeapon weapon) : base(weapon, " (Strong)")
     {
+        
     }
 }

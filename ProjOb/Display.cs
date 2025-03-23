@@ -1,33 +1,115 @@
+using System.Drawing;
+using System.Text;
+
 namespace ProjOb;
 
 public class Display
 {
-    public static int Offset = 5;
-    private Map _map;
-    private Player _player;
-
-    public Display(Map map, Player player)
+    private static Display? _instance;
+    private const int Offset = 5;
+    private readonly Map _map;
+    private readonly Player _player;
+    private static readonly (int X, int Y) DefaultCursorPos = (0, 21);
+    private static readonly (int X, int Y) MaxSize = (100, 30);
+    private static readonly int Width = MaxSize.X - Map.XMapSize - Offset;
+    private Display(Map map, Player player)
     {
         _map = map;
         _player = player;
-        _player.OnUpdate += Update;
-        _map.OnUpdate += Update;
+        player.OnUpdate += Update;
+        map.OnUpdate += UpdateTile;
+        _instance = this;
+        Console.SetWindowSize(MaxSize.X,  MaxSize.Y);
         Update();
     }
 
-    public void Update() // TODO: update only map/stats/eq/... and not the whole screen
+    public static Display GetInstance(Map map, Player player)
+    {
+        return _instance ?? new Display(map, player);
+    }
+
+    private void Update() // TODO: update only map/stats/eq/... and not the whole screen
     {
         Console.Clear();
         Console.SetCursorPosition(0, 0);
-        foreach (var line in _map)
+        foreach (var line in DisplayMap())
         {
             Console.WriteLine(line);
         }
+        UpdatePlayer();
+    }
+
+    private void UpdateTile(Point p)
+    {
+        Console.SetCursorPosition(p.X, p.Y);
+        Console.Write(_map[p.X, p.Y].Print() );
+        Console.SetCursorPosition(DefaultCursorPos.X, DefaultCursorPos.Y);
+    }
+    private void UpdatePlayer()
+    {
+        /*for (int i = 0; i < MaxSize.X; i++)
+        {
+            Console.SetCursorPosition(Map.XMapSize + Offset, i);
+            for (int j = 0; j < Width; j++)
+            {
+                Console.Write(' ');
+            }
+        }*/
         Console.SetCursorPosition(0, 0);
-        foreach (var line in _player)
+        foreach (string line in DisplayPlayer())
         {
             Console.SetCursorPosition(Map.XMapSize + Offset, Console.CursorTop);
             Console.WriteLine(line);
         }
+        Console.SetCursorPosition(DefaultCursorPos.X, DefaultCursorPos.Y);
     }
+    private IEnumerable<string> DisplayPlayer()
+    {
+        foreach (var stat in _player.Stats)
+        {
+            yield return $"{stat.Key}: {stat.Value}";
+        }
+
+        yield return "------------------------------------------";
+
+        foreach (var currency in _player.Currencies)
+        {
+            yield return $"{currency.Name}: {currency.Amount}";
+        }
+
+        yield return "------------------------------------------";
+        yield return $"Left hand: {_player.HeldItems[0]?.Name ?? "Nothing"}";
+        yield return $"Right hand: {_player.HeldItems[1]?.Name ?? "Nothing"}";
+        yield return "------------------------------------------";
+        yield return "Contents of the tile:";
+        foreach (var item in _player.Position!)
+        {
+            if (item.Name == "Player") continue;
+            yield return item.Name;
+        }
+
+        yield return "------------------------------------------";
+        yield return $"Inventory: (Selected item: {_player.Inventory[_player.SelectedItem]?.Name ?? "Nothing"})";
+        foreach (var item in _player.Inventory)
+        {
+            if (item == null) continue;
+            yield return item.Name;
+            if(item.Info != "")
+                yield return "  " + item.Info;
+        }
+    }
+
+    private IEnumerable<string> DisplayMap()
+    {
+        for (int y = 0; y < Map.YMapSize; y++)
+        {
+            StringBuilder sb = new();
+            for (int x = 0; x < Map.XMapSize; x++)
+            {
+                sb.Append(_map[x, y].Print());
+            }
+            yield return sb.ToString();
+        }
+    }
+    
 }
