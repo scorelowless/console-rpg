@@ -32,9 +32,10 @@ public abstract class Entity : IMappable
 
     public ImmutableArray<IItem?> Inventory => [.._inventory];
 
-    protected Entity(string name, Tile position)
+    protected Entity(string name, char display, Tile position)
     {
         Name = name;
+        Display = display;
         _position = position;
         position.Add(this);
         IsHandTaken = [false, false];

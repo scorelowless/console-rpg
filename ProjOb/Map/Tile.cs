@@ -8,7 +8,7 @@ public class Tile : IEnumerable<IMappable>
     public readonly Map Map;
     private readonly List<IMappable> _contents = [];
     public Point Position { get; }
-    public bool IsWalkable { get; }
+    public bool IsWalkable { get; set; }
     public char Print() => _contents.Count == 0 ? (IsWalkable ? ' ' : '\u2588') : _contents[^1].Display;
     public event Action? OnUpdate;
 

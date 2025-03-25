@@ -151,7 +151,16 @@ public class MapBuilder : IMapBuilder
     public void AddEnemies(int n)
     {
         CheckNull();
-        throw new NotImplementedException();
+        foreach (Tile tile in GetTiles(n))
+        {
+            Enemy enemy = _r.NextDouble() switch
+            {
+                < 0.3 => new Goblin(tile),
+                < 0.7 => new Kobold(tile),
+                _ => new Ogre(tile)
+            };
+            tile.Add(enemy);
+        }
     }
 
     public Map? GetResult()
