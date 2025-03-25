@@ -15,6 +15,11 @@ public class Map
     {
         GenerateMap();
     }
+
+    public Map(Tile[,] tiles)
+    {
+        _tiles = tiles;
+    }
     public Tile NextTile(Tile tile, Direction direction)
     {
         Point position = new Point(tile.Position.X, tile.Position.Y);
