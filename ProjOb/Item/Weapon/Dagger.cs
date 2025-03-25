@@ -2,7 +2,7 @@ namespace ProjOb;
 
 public class Dagger : Weapon
 {
-    public Dagger(Tile? position) : base("Dagger", 'd', position)
+    public Dagger() : base("Dagger", 'd')
     {
         Damage = 5;
         HandsTaken = 1;

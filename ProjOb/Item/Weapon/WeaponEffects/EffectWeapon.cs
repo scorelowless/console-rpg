@@ -19,12 +19,6 @@ public abstract class EffectWeapon : IWeapon
     public int HandsTaken => Weapon.HandsTaken;
     public virtual int Damage => Weapon.Damage;
 
-    public Tile? Position
-    {
-        get => Weapon.Position;
-        set => Weapon.Position = value;
-    }
-
     public char Display => Weapon.Display;
     public string Name => Weapon.Name + _effectName;
     

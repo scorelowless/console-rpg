@@ -4,7 +4,7 @@ namespace ProjOb;
 
 public class Wood : Item
 {
-    public Wood(Tile? position) : base( "Wood", 'w', position)
+    public Wood() : base( "Wood", 'w')
     {
     }
 }

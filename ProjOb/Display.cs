@@ -82,7 +82,7 @@ public class Display
         yield return $"Right hand: {_player.HeldItems[1]?.Name ?? "Nothing"}";
         yield return "------------------------------------------";
         yield return "Contents of the tile:";
-        foreach (var item in _player.Position!)
+        foreach (var item in _player.Position)
         {
             if (item.Name == "Player") continue;
             yield return item.Name;

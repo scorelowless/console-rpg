@@ -20,7 +20,7 @@ public class Player : Entity
 
     public void Move(Direction direction)
     {
-        Position!.Remove(this);
+        Position.Remove(this);
         Position = Position.Map.NextTile(Position, direction);
         Position.Add(this);
         OnUpdate?.Invoke();
@@ -61,9 +61,8 @@ public class Player : Entity
         if (!res.Item1) return; // if it cannot be used
         if (res.Item2 == null) return; // if item after use is used (null)
         IHeldable? h = res.Item2.ToHeldable();
-        if(h != null) // if the item is IHeldable
+        if(h != null && Grab(h)) // if the item is IHeldable and can be grabbed
         {
-            Grab(h);
             _inventory[SelectedItem] = null;
         }
         OnUpdate?.Invoke();

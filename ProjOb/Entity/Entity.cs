@@ -6,18 +6,8 @@ public abstract class Entity : IMappable
 {
     public string Name { get; }
     public IItem? ToItem() => null;
-    private Tile _position;
+    public Tile Position { get; protected set; }
     private readonly IHeldable?[] _heldItems;
-
-    public Tile? Position // TODO: fix nullability issue
-    {
-        get => _position;
-        set
-        {
-            ArgumentNullException.ThrowIfNull(value);
-            _position = value;
-        }
-    }
 
     public char Display { get; }
     public Dictionary<string, int> Stats { get; }
@@ -30,7 +20,7 @@ public abstract class Entity : IMappable
     {
         Name = name;
         Display = display;
-        _position = position;
+        Position = position;
         position.Add(this);
         IsHandTaken = [false, false];
         _heldItems = [null, null];

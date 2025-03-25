@@ -77,14 +77,14 @@ public class Map
                     switch (f)
                     {
                         case < 0.1:
-                            l = new Longsword(currentTile);
+                            l = new Longsword();
                             break;
                         case < 0.2:
-                            l = new Dagger(currentTile);
+                            l = new Dagger();
                             f -= 0.1;
                             break;
                         default:
-                            l = new SmallSword(currentTile);
+                            l = new SmallSword();
                             f -= 0.2;
                             break;
                     }
@@ -95,19 +95,19 @@ public class Map
                 }
                 case < 0.5:
                 {
-                    Bottle b =  new Bottle(currentTile);
+                    Bottle b =  new Bottle();
                     currentTile.Add(b);
                     break;
                 }
                 case < 0.7:
                 {
-                    Wood w = new Wood(currentTile);
+                    Wood w = new Wood();
                     currentTile.Add(w);
                     break;
                 }
                 case < 0.9:
                 {
-                    Stone s = new Stone(currentTile);
+                    Stone s = new Stone();
                     currentTile.Add(s);
                     break;
                 }

@@ -8,7 +8,7 @@ public abstract class Weapon : Item, IWeapon
     public override string Info => $"Damage: {Damage}";
     public override IHeldable ToHeldable() => this;
 
-    protected Weapon(string name, char display, Tile? position = null) : base(name, display, position)
+    protected Weapon(string name, char display) : base(name, display)
     {
         OnUse = () => (IsHeld = true, this);
         OnUnequip += () => IsHeld = false;

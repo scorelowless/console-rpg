@@ -2,7 +2,6 @@ namespace ProjOb;
 
 public abstract class Item : IItem
 {
-    public Tile? Position { get; set; }
     public char Display { get; set; }
     public virtual string Name { get; }
     public virtual string Info { get; protected init; } = "";
@@ -15,9 +14,8 @@ public abstract class Item : IItem
     public Func<(bool, IItem?)> OnUse { get; protected init; }
     public Action OnUnequip { get; protected init; } = () => { };
 
-    protected Item(string name, char display, Tile? position = null)
+    protected Item(string name, char display)
     {
-        Position = position;
         Name = name;
         Display = display;
         OnPickUp = entity => Owner = entity;

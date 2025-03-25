@@ -88,9 +88,9 @@ public class MapBuilder : IMapBuilder
            double v = _r.NextDouble();
            Item item = v switch
            {
-               < 0.3 => new Bottle(tile),
-               < 0.7 => new Wood(tile),
-               _ => new Stone(tile)
+               < 0.3 => new Bottle(),
+               < 0.7 => new Wood(),
+               _ => new Stone()
            };
            tile.Add(item);
         }
@@ -103,9 +103,9 @@ public class MapBuilder : IMapBuilder
         {
             Weapon weapon = _r.NextDouble() switch
             {
-                < 0.3 => new Dagger(tile),
-                < 0.7 => new SmallSword(tile),
-                _ => new Longsword(tile)
+                < 0.3 => new Dagger(),
+                < 0.7 => new SmallSword(),
+                _ => new Longsword()
             };
             tile.Add(weapon);
         }
@@ -118,9 +118,9 @@ public class MapBuilder : IMapBuilder
         {
             IWeapon weapon = _r.NextDouble() switch
             {
-                < 0.3 => new Dagger(tile),
-                < 0.7 => new SmallSword(tile),
-                _ => new Longsword(tile)
+                < 0.3 => new Dagger(),
+                < 0.7 => new SmallSword(),
+                _ => new Longsword()
             };
             weapon = _r.NextDouble() switch
             {
