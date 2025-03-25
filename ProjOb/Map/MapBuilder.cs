@@ -1,4 +1,5 @@
 using System.Drawing;
+using ProjOb.Elixirs;
 using ProjOb.WeaponEffects;
 
 namespace ProjOb;
@@ -143,6 +144,22 @@ public class MapBuilder : IMapBuilder
     }
 
     public void AddElixirs(int n)
+    {
+        CheckNull();
+        foreach (Tile tile in GetTiles(n))
+        {
+            IElixir elixir = _r.NextDouble() switch
+            {
+                < 0.3 => new PowerElixir(),
+                < 0.6 => new AgilityElixir(),
+                < 0.9 => new StrengthElixir(),
+                _ => new StrongPowerElixir()
+            };
+            tile.Add(elixir);
+        }
+    }
+
+    public void AddCurrencies(int n)
     {
         CheckNull();
         throw new NotImplementedException();
