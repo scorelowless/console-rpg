@@ -74,7 +74,7 @@ public class Display
 
         foreach (var currency in _player.Currencies)
         {
-            yield return $"{currency.Name}: {currency.Amount}";
+            yield return $"{currency.Value.Name}: {currency.Value.Amount}";
         }
 
         yield return "------------------------------------------";

@@ -10,12 +10,16 @@ public class Player : Entity
     public event Action? OnUpdate;
     private readonly IItem?[] _inventory;
     public ImmutableArray<IItem?> Inventory => [.._inventory];
-    public ICurrency[] Currencies { get; }
+    public Dictionary<string, ICurrency> Currencies { get; }
 
     public Player(Map map) : base("Player", '¶', map[0,0])
     {
         _inventory = new IItem?[InventorySize];
-        Currencies = [new Money(0, 0), new  Gold(0, 1)];
+        Currencies = new Dictionary<string, ICurrency>
+        {
+            { "Money", new Money(0) },
+            { "Gold", new Gold(0) }
+        };
     }
 
     public void Move(Direction direction)
