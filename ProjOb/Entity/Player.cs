@@ -1,3 +1,6 @@
+using System.Collections.Immutable;
+using ProjOb.Currencies;
+
 namespace ProjOb;
 
 public class Player : Entity
@@ -5,11 +8,14 @@ public class Player : Entity
     private const int InventorySize = 20;
     public int SelectedItem { get; private set; }
     public event Action? OnUpdate;
+    private readonly IItem?[] _inventory;
+    public ImmutableArray<IItem?> Inventory => [.._inventory];
+    public ICurrency[] Currencies { get; }
 
-    public Player(Map map) : base("Player", map[0,0])
+    public Player(Map map) : base("Player", '¶', map[0,0])
     {
-        Array.Resize(ref _inventory, InventorySize);
-        Display = '¶';
+        _inventory = new IItem?[InventorySize];
+        Currencies = [new Money(0, 0), new  Gold(0, 1)];
     }
 
     public void Move(Direction direction)

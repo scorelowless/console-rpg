@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using ProjOb.Currencies;
 
 namespace ProjOb;
 
@@ -9,9 +8,6 @@ public abstract class Entity : IMappable
     public IItem? ToItem() => null;
     private Tile _position;
     private readonly IHeldable?[] _heldItems;
-    protected IItem?[] _inventory;
-    
-    public ICurrency[] Currencies { get; }
 
     public Tile? Position // TODO: fix nullability issue
     {
@@ -23,14 +19,12 @@ public abstract class Entity : IMappable
         }
     }
 
-    public char Display { get; init; }
+    public char Display { get; }
     public Dictionary<string, int> Stats { get; }
 
     public ImmutableArray<IHeldable?> HeldItems => [.._heldItems];
 
     private bool[] IsHandTaken { get; }
-
-    public ImmutableArray<IItem?> Inventory => [.._inventory];
 
     protected Entity(string name, char display, Tile position)
     {
@@ -40,8 +34,6 @@ public abstract class Entity : IMappable
         position.Add(this);
         IsHandTaken = [false, false];
         _heldItems = [null, null];
-        _inventory = [];
-        Currencies = [new Money(0, 0), new  Gold(0, 1)];
         Stats = new Dictionary<string, int>
         {
             { "Power", 10 },
