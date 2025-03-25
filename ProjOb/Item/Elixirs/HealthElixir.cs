@@ -1,13 +1,13 @@
 namespace ProjOb.Elixirs;
 
-public class StrengthElixir : Item, IElixir
+public class HealthElixir : Item, IElixir
 {
     private const int Value = 5;
-    public StrengthElixir() : base("Strength elixir", 'E')
+    public HealthElixir() : base("Health elixir", 'E')
     {
         OnUse = () =>
         {
-            Owner!.Stats["Strength"] += Value;
+            Owner!.Stats["Health"] += Value;
             return (true, null);
         };
     }

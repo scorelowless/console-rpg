@@ -10,6 +10,7 @@ public class Player : Entity
     public event Action? OnUpdate;
     private readonly IItem?[] _inventory;
     public ImmutableArray<IItem?> Inventory => [.._inventory];
+
     public Dictionary<string, ICurrency> Currencies { get; }
 
     public Player(Map map) : base("Player", '¶', map[0,0])
@@ -63,7 +64,12 @@ public class Player : Entity
         if (I == null) return;
         var res = I.OnUse(); // try to use item
         if (!res.Item1) return; // if it cannot be used
-        if (res.Item2 == null) return; // if item after use is used (null)
+        if (res.Item2 == null) // if item after use is used (null)
+        {
+            _inventory[SelectedItem] = null;
+            OnUpdate?.Invoke();
+            return;
+        }
         IHeldable? h = res.Item2.ToHeldable();
         if(h != null && Grab(h)) // if the item is IHeldable and can be grabbed
         {

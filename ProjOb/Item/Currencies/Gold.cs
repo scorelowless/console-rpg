@@ -12,7 +12,7 @@ public class Gold : Item, ICurrency
         OnUse = () =>
         {
             PlayerOwner!.Currencies["Gold"].Amount += Amount;
-            return (false, null);
+            return (true, null);
         };
     }
 }

@@ -28,7 +28,6 @@ public class MapBuilder : IMapBuilder
                 tiles[i, j] = new Tile(_map, true, new Point(i, j));
             }
         }
-        _map.UpdateOnUpdates();
     }
 
     public void Full()
@@ -42,7 +41,6 @@ public class MapBuilder : IMapBuilder
                 tiles[i, j] = new Tile(_map, false, new Point(i, j));
             }
         }
-        _map.UpdateOnUpdates();
     }
 
     private void CheckNull()
@@ -155,7 +153,7 @@ public class MapBuilder : IMapBuilder
             {
                 < 0.3 => new PowerElixir(),
                 < 0.6 => new AgilityElixir(),
-                < 0.9 => new StrengthElixir(),
+                < 0.9 => new HealthElixir(),
                 _ => new StrongPowerElixir()
             };
             tile.Add(elixir);
@@ -193,6 +191,7 @@ public class MapBuilder : IMapBuilder
 
     public Map? GetResult()
     {
+        _map?.UpdateOnUpdates();
         return _map;
     }
 }

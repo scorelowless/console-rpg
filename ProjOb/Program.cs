@@ -3,14 +3,18 @@
 static class Program
 {
     private static bool _isRunning = true;
-    private static readonly Map Map =  MapBuilderDirector.GenerateMap();
-    private static readonly Player Player = new(Map);
-    private static readonly Display Display = Display.GetInstance(Map, Player);
-
+    private static readonly Player Player;
     private static void Main()
     {
         Thread keyListenerThread = new Thread(KeyListener);
         keyListenerThread.Start();
+    }
+
+    static Program()
+    {
+        Map map = MapBuilderDirector.GenerateMap();
+        Player = new Player(map);
+        _ = Display.GetInstance(map, Player);
     }
 
     private static void KeyListener()
