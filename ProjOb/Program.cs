@@ -3,7 +3,7 @@
 static class Program
 {
     private static bool _isRunning = true;
-    private static readonly Map Map =  new();
+    private static readonly Map Map =  MapBuilderDirector.GenerateMap();
     private static readonly Player Player = new(Map);
     private static readonly Display Display = Display.GetInstance(Map, Player);
 

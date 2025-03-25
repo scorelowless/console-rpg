@@ -11,7 +11,7 @@ public class Display
     private readonly Player _player;
     private static readonly (int X, int Y) DefaultCursorPos = (0, 21);
     private static readonly (int X, int Y) MaxSize = (100, 30);
-    private static readonly int Width = MaxSize.X - Map.XMapSize - Offset;
+    private static readonly int Width = MaxSize.X - MapBuilder.MapSizeY - Offset;
     private Display(Map map, Player player)
     {
         _map = map;
@@ -58,7 +58,7 @@ public class Display
         Console.SetCursorPosition(0, 0);
         foreach (string line in DisplayPlayer())
         {
-            Console.SetCursorPosition(Map.XMapSize + Offset, Console.CursorTop);
+            Console.SetCursorPosition(MapBuilder.MapSizeX + Offset, Console.CursorTop);
             Console.WriteLine(line);
         }
         Console.SetCursorPosition(DefaultCursorPos.X, DefaultCursorPos.Y);
@@ -101,10 +101,10 @@ public class Display
 
     private IEnumerable<string> DisplayMap()
     {
-        for (int y = 0; y < Map.YMapSize; y++)
+        for (int y = 0; y < MapBuilder.MapSizeY; y++)
         {
             StringBuilder sb = new();
-            for (int x = 0; x < Map.XMapSize; x++)
+            for (int x = 0; x < MapBuilder.MapSizeX; x++)
             {
                 sb.Append(_map[x, y].Print());
             }

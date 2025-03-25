@@ -20,7 +20,7 @@ public class MapBuilder : IMapBuilder
     public void Empty()
     { 
         Tile[,] tiles = new Tile[MapSizeX, MapSizeY];
-        _map = new Map(tiles);
+        _map = new Map(tiles, MapSizeX, MapSizeY);
         for (int i = 0; i < MapSizeX; i++)
         {
             for (int j = 0; j < MapSizeY; j++)
@@ -28,12 +28,13 @@ public class MapBuilder : IMapBuilder
                 tiles[i, j] = new Tile(_map, true, new Point(i, j));
             }
         }
+        _map.UpdateOnUpdates();
     }
 
     public void Full()
     {
         Tile[,] tiles = new Tile[MapSizeX, MapSizeY];
-        _map = new Map(tiles);
+        _map = new Map(tiles, MapSizeX, MapSizeY);
         for (int i = 0; i < MapSizeX; i++)
         {
             for (int j = 0; j < MapSizeY; j++)
@@ -41,6 +42,7 @@ public class MapBuilder : IMapBuilder
                 tiles[i, j] = new Tile(_map, false, new Point(i, j));
             }
         }
+        _map.UpdateOnUpdates();
     }
 
     private void CheckNull()
@@ -54,7 +56,7 @@ public class MapBuilder : IMapBuilder
         Random r =  new Random();
         for(int i = 0; i < n; i++)
         {
-            Tile t = _map![r.Next(),  r.Next()];
+            Tile t = _map![r.Next() % MapSizeX,  r.Next() % MapSizeY];
             if (t.IsWalkable == false)
             {
                 --i;
