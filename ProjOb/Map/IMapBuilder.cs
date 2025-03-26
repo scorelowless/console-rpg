@@ -15,5 +15,5 @@ public interface IMapBuilder
     void AddElixirs(int n);
     void AddCurrencies(int n, int max);
     void AddEnemies(int n);
-    Map? GetResult();
+    object? GetResult();
 }

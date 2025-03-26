@@ -12,10 +12,10 @@ static class Program
 
     static Program()
     {
-        MapBuilder builder = new MapBuilder();
-        Map map = MapBuilderDirector.GenerateBasicMap(builder);
+        Map map = MapBuilderDirector.GenerateBasicMap(new MapBuilder()) as Map ?? throw new Exception("MapBuilderDirector.GenerateBasicMap returned null");
+        string instructions = MapBuilderDirector.GenerateBasicMap(new InstructionBuilder()) as string ?? throw new Exception("MapBuilderDirector.GenerateBasicMap returned null");
         Player = new Player(map);
-        _ = Display.GetInstance(map, Player);
+        _ = Display.GetInstance(map, Player, instructions);
     }
 
     private static void KeyListener()

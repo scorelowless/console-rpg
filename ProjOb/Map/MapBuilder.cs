@@ -250,7 +250,7 @@ public class MapBuilder : IMapBuilder
         }
     }
 
-    public Map? GetResult()
+    public object? GetResult()
     {
         _map?.UpdateOnUpdates();
         return _map;

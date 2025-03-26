@@ -2,7 +2,7 @@ namespace ProjOb;
 
 public static class MapBuilderDirector
 {
-    public static Map GenerateBasicMap(IMapBuilder builder)
+    public static object GenerateBasicMap(IMapBuilder builder)
     {
         builder.Full();
         builder.AddMainRoom();
