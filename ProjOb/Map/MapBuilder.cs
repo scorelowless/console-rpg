@@ -54,7 +54,7 @@ public class MapBuilder : IMapBuilder
         for(int i = 0; i < n; i++)
         {
             Tile t = _map![_r.Next(MapSizeX), _r.Next(MapSizeY)];
-            if (t.IsWalkable == false)
+            if (t.IsNotWall == false)
             {
                 --i;
                 continue;
@@ -83,7 +83,7 @@ public class MapBuilder : IMapBuilder
         Point current = new Point(start.X, start.Y);
         foreach (var move in dir)
         {
-            _map![current.X, current.Y].IsWalkable = true;
+            _map![current.X, current.Y].IsNotWall = true;
             switch (move, goesDown, goesRight)
             {
                 case (true, _, true):
@@ -100,7 +100,7 @@ public class MapBuilder : IMapBuilder
                     break;
             }
         }
-        _map![current.X, current.Y].IsWalkable = true;
+        _map![current.X, current.Y].IsNotWall = true;
     }
 
     public void AddDefaultPath()
@@ -122,12 +122,12 @@ public class MapBuilder : IMapBuilder
         for(int i = 0; i < n; i++)
         {
             Tile t = _map![_r.Next(MapSizeX),  _r.Next(MapSizeY)];
-            if (t.IsWalkable)
+            if (t.IsNotWall)
             {
                 --i;
                 continue;
             }
-            t.IsWalkable = true;
+            t.IsNotWall = true;
         }
     }
 
@@ -138,7 +138,7 @@ public class MapBuilder : IMapBuilder
         {
             for (int j = 5; j < MapSizeY - 5; j++)
             {
-                _map![i, j].IsWalkable = true;
+                _map![i, j].IsNotWall = true;
             }
         }
     }
@@ -155,7 +155,7 @@ public class MapBuilder : IMapBuilder
                < 0.7 => new Wood(),
                _ => new Stone()
            };
-           tile.Add(item);
+           tile.AddItem(item);
         }
     }
 
@@ -170,7 +170,7 @@ public class MapBuilder : IMapBuilder
                 < 0.7 => new SmallSword(),
                 _ => new Longsword()
             };
-            tile.Add(weapon);
+            tile.AddItem(weapon);
         }
     }
 
@@ -201,7 +201,7 @@ public class MapBuilder : IMapBuilder
                 < 0.7 => weapon,
                 _ => new Weak(weapon)
             };
-            tile.Add(weapon);
+            tile.AddItem(weapon);
         }
     }
 
@@ -217,7 +217,7 @@ public class MapBuilder : IMapBuilder
                 < 0.9 => new HealthElixir(),
                 _ => new StrongPowerElixir()
             };
-            tile.Add(elixir);
+            tile.AddItem(elixir);
         }
     }
 
@@ -231,7 +231,7 @@ public class MapBuilder : IMapBuilder
                 < 0.3 => new Money(_r.Next(100)),
                 _ => new Gold(_r.Next(100))
             };
-            tile.Add(currency);
+            tile.AddItem(currency);
         }
     }
 
@@ -246,7 +246,7 @@ public class MapBuilder : IMapBuilder
                 < 0.7 => new Kobold(tile),
                 _ => new Ogre(tile)
             };
-            tile.Add(enemy);
+            tile.AddEnemy(enemy);
         }
     }
 

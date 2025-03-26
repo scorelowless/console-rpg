@@ -21,7 +21,6 @@ public abstract class Entity : IMappable
         Name = name;
         Display = display;
         Position = position;
-        position.Add(this);
         IsHandTaken = [false, false];
         _heldItems = [null, null];
         Stats = new Dictionary<string, int>

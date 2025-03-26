@@ -14,6 +14,8 @@ static class Program
     {
         Map map = MapBuilderDirector.GenerateBasicMap(new MapBuilder()) as Map ?? throw new Exception("MapBuilderDirector.GenerateBasicMap returned null");
         string instructions = MapBuilderDirector.GenerateBasicMap(new InstructionBuilder()) as string ?? throw new Exception("MapBuilderDirector.GenerateBasicMap returned null");
+        //Map map = MapBuilderDirector.GeneratePoorMap(new MapBuilder()) as Map ?? throw new Exception("MapBuilderDirector.GenerateBasicMap returned null");
+        //string instructions = MapBuilderDirector.GeneratePoorMap(new InstructionBuilder()) as string ?? throw new Exception("MapBuilderDirector.GenerateBasicMap returned null");
         Player = new Player(map);
         _ = Display.GetInstance(map, Player, instructions);
     }

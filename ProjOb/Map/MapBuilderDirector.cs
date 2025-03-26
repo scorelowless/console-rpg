@@ -17,4 +17,16 @@ public static class MapBuilderDirector
         builder.AddEffectWeapons(3);
         return builder.GetResult() ?? throw new Exception("Unexpected behavior: MapBuilder returned null");
     }
+    
+    public static object GeneratePoorMap(IMapBuilder builder)
+    {
+        builder.Full();
+        builder.AddPaths(30);
+        builder.AddItems(20);
+        builder.AddDefaultPath();
+        builder.AddElixirs(10);
+        builder.AddCurrencies(10, 50);
+        builder.AddRooms(30);
+        return builder.GetResult() ?? throw new Exception("Unexpected behavior: MapBuilder returned null");
+    }
 }

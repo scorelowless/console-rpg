@@ -50,7 +50,7 @@ public class Map
         }
 
         if (position.X < 0 || position.X >= _mapSizeX || position.Y < 0 || position.Y >= _mapSizeY ||
-            !_tiles[position.X, position.Y].IsWalkable)
+            !_tiles[position.X, position.Y].IsNotWall)
         {
             return tile;
         }

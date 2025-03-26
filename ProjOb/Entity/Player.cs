@@ -13,6 +13,8 @@ public class Player : Entity
     // 2. log recent player action
     public event Action? OnUpdate;
     private readonly IItem?[] _inventory;
+    public string LastAction { get; private set; } = "";
+    public Enemy? NearbyEnemy { get; private set; }
     public ImmutableArray<IItem?> Inventory => [.._inventory];
 
     public Dictionary<string, ICurrency> Currencies { get; }
@@ -25,15 +27,31 @@ public class Player : Entity
             { "Money", new Money(0) },
             { "Gold", new Gold(0) }
         };
+        map[0, 0].AddPlayer();
     }
 
     public void Move(Direction direction)
     {
-        Position.Remove(this);
-        Position = Position.Map.NextTile(Position, direction);
-        Position.Add(this);
+        Tile nextPosition = Position.Map.NextTile(Position, direction);
+        if (nextPosition == Position) return;
+        if (nextPosition.ContainsEnemies() != null) return;
+        Position.RemovePlayer();
+        Position = nextPosition;
+        Position.AddPlayer();
+        NearbyEnemy = Position.Map.NextTile(Position, Direction.Up).ContainsEnemies() ??
+                      Position.Map.NextTile(Position, Direction.Right).ContainsEnemies() ??
+                      Position.Map.NextTile(Position, Direction.Down).ContainsEnemies() ??
+                      Position.Map.NextTile(Position, Direction.Left).ContainsEnemies() ??
+                      null;
+        LastAction = direction switch
+        {
+            Direction.Up => "Player moved up",
+            Direction.Right => "Player moved right",
+            Direction.Down => "Player moved down",
+            Direction.Left => "Player moved left",
+            _ => ""
+        };
         OnUpdate?.Invoke();
-        // TODO: update info about nearby enemies here
     }
 
     private int GetEmptyInventorySlot()
@@ -48,17 +66,19 @@ public class Player : Entity
     {
         int ind = GetEmptyInventorySlot();
         if (ind == -1) return;
-        var temp = Position!.Pick();
+        var temp = Position.Pick();
         temp?.OnPickUp(this);
         _inventory[ind] = temp;
+        LastAction = temp == null ? LastAction : $"Player picked up {temp.Name}";
         OnUpdate?.Invoke();
     }
 
     public void ThrowAway()
     {
         if (Inventory[SelectedItem] == null) return;
-        Position!.Add(Inventory[SelectedItem]!);
+        Position.AddItem(Inventory[SelectedItem]!);
         Inventory[SelectedItem]!.OnThrow();
+        LastAction = $"Player threw {Inventory[SelectedItem]!.Name} away";
         _inventory[SelectedItem] = null;
         OnUpdate?.Invoke();
     }
@@ -69,6 +89,7 @@ public class Player : Entity
         if (I == null) return;
         var res = I.OnUse(); // try to use item
         if (!res.Item1) return; // if it cannot be used
+        LastAction = $"Player used {I.Name}";
         if (res.Item2 == null) // if item after use is used (null)
         {
             _inventory[SelectedItem] = null;
@@ -91,6 +112,7 @@ public class Player : Entity
         if (t == null) return;
         t.OnUnequip();
         _inventory[ind] = t;
+        LastAction = $"Player unequipped {t.Name}";
         OnUpdate?.Invoke();
     }
 
