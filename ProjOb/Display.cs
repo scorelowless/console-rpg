@@ -9,13 +9,14 @@ public class Display
     private const int Offset = 5;
     private readonly Map _map;
     private readonly Player _player;
-    private static readonly (int X, int Y) DefaultCursorPos = (0, 21);
-    private static readonly (int X, int Y) MaxSize = (100, 30);
-    private static readonly int Width = MaxSize.X - MapBuilder.MapSizeY - Offset;
-    private Display(Map map, Player player)
+    private readonly string _instructions;
+    private static readonly (int X, int Y) DefaultCursorPos = (0, 30);
+    private static readonly (int X, int Y) MaxSize = (200, 40);
+    private Display(Map map, Player player, string instructions)
     {
         _map = map;
         _player = player;
+        _instructions = instructions;
         player.OnUpdate += Update;
         map.OnUpdate += UpdateTile;
         _instance = this;
@@ -23,9 +24,9 @@ public class Display
         Update();
     }
 
-    public static Display GetInstance(Map map, Player player)
+    public static Display GetInstance(Map map, Player player, string instructions = "")
     {
-        return _instance ?? new Display(map, player);
+        return _instance ?? new Display(map, player, instructions);
     }
 
     private void Update() // TODO: update only map/stats/eq/... and not the whole screen
@@ -36,6 +37,7 @@ public class Display
         {
             Console.WriteLine(line);
         }
+        UpdateInstructions();
         UpdatePlayer();
     }
 
@@ -47,22 +49,24 @@ public class Display
     }
     private void UpdatePlayer()
     {
-        /*for (int i = 0; i < MaxSize.X; i++)
-        {
-            Console.SetCursorPosition(Map.XMapSize + Offset, i);
-            for (int j = 0; j < Width; j++)
-            {
-                Console.Write(' ');
-            }
-        }*/
         Console.SetCursorPosition(0, 0);
         foreach (string line in DisplayPlayer())
         {
             Console.SetCursorPosition(MapBuilder.MapSizeX + Offset, Console.CursorTop);
             Console.WriteLine(line);
         }
+        Console.SetCursorPosition(0, 21);
+        Console.WriteLine("Last action:");
+        Console.WriteLine(_player.LastAction);
         Console.SetCursorPosition(DefaultCursorPos.X, DefaultCursorPos.Y);
     }
+
+    private void UpdateInstructions()
+    {
+        Console.SetCursorPosition(0, 24);
+        Console.Write(_instructions);
+    }
+    
     private IEnumerable<string> DisplayPlayer()
     {
         foreach (var stat in _player.Stats)
@@ -87,7 +91,12 @@ public class Display
             if (item.Name == "Player") continue;
             yield return item.Name;
         }
-
+        if (_player.NearbyEnemy != null)
+        {
+            yield return "------------------------------------------";
+            yield return $"Nearby Enemy: {_player.NearbyEnemy.Name}";
+        }
+        
         yield return "------------------------------------------";
         yield return $"Inventory: (Selected item: {_player.Inventory[_player.SelectedItem]?.Name ?? "Nothing"})";
         foreach (var item in _player.Inventory)

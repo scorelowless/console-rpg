@@ -8,7 +8,7 @@ public class InstructionBuilder : IMapBuilder
     private bool _hasUsables = false;
     private bool _hasWeapons = false;
     private bool _hasEnemies = false;
-    private readonly StringBuilder _text = new StringBuilder();
+    private readonly StringBuilder _text = new();
     public void Reset()
     {
         _text.Clear();
@@ -80,6 +80,7 @@ public class InstructionBuilder : IMapBuilder
     {
         if(_hasEnemies || n == 0) return;
         _text.Append("X: attack nearby enemy(not implemented)\n");
+        _hasEnemies = true;
     }
 
     public object GetResult()
