@@ -7,6 +7,10 @@ public class Player : Entity
 {
     private const int InventorySize = 20;
     public int SelectedItem { get; private set; }
+    
+    // TODO: split OnUpdate into array of events and
+    // 1. update every element individually
+    // 2. log recent player action
     public event Action? OnUpdate;
     private readonly IItem?[] _inventory;
     public ImmutableArray<IItem?> Inventory => [.._inventory];
@@ -29,6 +33,7 @@ public class Player : Entity
         Position = Position.Map.NextTile(Position, direction);
         Position.Add(this);
         OnUpdate?.Invoke();
+        // TODO: update info about nearby enemies here
     }
 
     private int GetEmptyInventorySlot()

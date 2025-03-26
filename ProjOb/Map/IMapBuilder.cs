@@ -5,8 +5,9 @@ public interface IMapBuilder
     void Reset();
     void Empty();
     void Full();
-    void AddPaths();
-    void AddRooms();
+    void AddPaths(int n);
+    void AddDefaultPath();
+    void AddRooms(int n);
     void AddMainRoom();
     void AddItems(int n);
     void AddWeapons(int n);

@@ -51,10 +51,9 @@ public class MapBuilder : IMapBuilder
     private IEnumerable<Tile> GetTiles(int n)
     {
         CheckNull();
-        Random r =  new Random();
         for(int i = 0; i < n; i++)
         {
-            Tile t = _map![r.Next() % MapSizeX,  r.Next() % MapSizeY];
+            Tile t = _map![_r.Next(MapSizeX), _r.Next(MapSizeY)];
             if (t.IsWalkable == false)
             {
                 --i;
@@ -64,22 +63,84 @@ public class MapBuilder : IMapBuilder
         }
     }
 
-    public void AddPaths()
+    private void AddPath(Point start, Point end)
     {
-        CheckNull();
-        throw new NotImplementedException();
+        // random shortest path between two points
+        bool[] ud = new bool[int.Abs(start.X - end.X)];
+        bool[] lr = new bool[int.Abs(start.Y - end.Y)];
+        for (int i = 0; i < lr.Length; i++)
+        {
+            lr[i] = true;
+        }
+        bool[] dir = lr.Concat(ud).ToArray();
+        for (int i = 0; i < dir.Length; i++)
+        {
+            int j = _r.Next(dir.Length);
+            (dir[i], dir[j]) = (dir[j], dir[i]);
+        }
+        bool goesDown = start.X < end.X;
+        bool goesRight = start.Y < end.Y;
+        Point current = new Point(start.X, start.Y);
+        foreach (var move in dir)
+        {
+            _map![current.X, current.Y].IsWalkable = true;
+            switch (move, goesDown, goesRight)
+            {
+                case (true, _, true):
+                    current.Y++;
+                    break;
+                case (true, _, false):
+                    current.Y--;
+                    break;
+                case (false, true, _):
+                    current.X++;
+                    break;
+                case (false, false, _):
+                    current.X--;
+                    break;
+            }
+        }
+        _map![current.X, current.Y].IsWalkable = true;
     }
 
-    public void AddRooms()
+    public void AddDefaultPath()
+    {
+        AddPath(new Point(0, 0), new Point(10, 5));
+    }
+    public void AddPaths(int n)
     {
         CheckNull();
-        throw new NotImplementedException();
+        for (int i = 0; i < n; i++)
+        {
+            AddPath(new Point(_r.Next(MapSizeX),  _r.Next(MapSizeY)), new Point(_r.Next(MapSizeX), _r.Next(MapSizeY)));
+        }
+    }
+
+    public void AddRooms(int n)
+    {
+        CheckNull();
+        for(int i = 0; i < n; i++)
+        {
+            Tile t = _map![_r.Next(MapSizeX),  _r.Next(MapSizeY)];
+            if (t.IsWalkable)
+            {
+                --i;
+                continue;
+            }
+            t.IsWalkable = true;
+        }
     }
 
     public void AddMainRoom()
     {
         CheckNull();
-        throw new NotImplementedException();
+        for (int i = 10; i < MapSizeX - 10; i++)
+        {
+            for (int j = 5; j < MapSizeY - 5; j++)
+            {
+                _map![i, j].IsWalkable = true;
+            }
+        }
     }
 
     public void AddItems(int n)

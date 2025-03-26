@@ -2,10 +2,13 @@ namespace ProjOb;
 
 public static class MapBuilderDirector
 {
-    public static Map GenerateMap()
+    public static Map GenerateBasicMap(IMapBuilder builder)
     {
-        MapBuilder builder = new MapBuilder();
-        builder.Empty();
+        builder.Full();
+        builder.AddMainRoom();
+        builder.AddRooms(30);
+        builder.AddPaths(20);
+        builder.AddDefaultPath();
         builder.AddEnemies(10);
         builder.AddCurrencies(10, 50);
         builder.AddElixirs(10);

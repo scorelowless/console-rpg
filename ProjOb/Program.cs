@@ -12,7 +12,8 @@ static class Program
 
     static Program()
     {
-        Map map = MapBuilderDirector.GenerateMap();
+        MapBuilder builder = new MapBuilder();
+        Map map = MapBuilderDirector.GenerateBasicMap(builder);
         Player = new Player(map);
         _ = Display.GetInstance(map, Player);
     }
