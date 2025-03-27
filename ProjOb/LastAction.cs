@@ -3,21 +3,21 @@ namespace ProjOb;
 public class LastAction
 {
     private readonly IItem? _involvedItem;
-    private readonly ActionType _actionType;
+    private ActionType Action { get; }
     private readonly Enemy? _encounteredEnemy;
     private static readonly bool[] RequiresItem = [false, false, false, false, true, true, true, true];
 
-    public LastAction(ActionType actionType, IItem? involvedItem = null, Enemy? encounteredEnemy = null)
+    public LastAction(ActionType action, IItem? involvedItem = null, Enemy? encounteredEnemy = null)
     {
-        _actionType = actionType;
+        Action = action;
         _involvedItem = involvedItem;
         _encounteredEnemy = encounteredEnemy;
-        if(RequiresItem[(int)actionType]) throw new InvalidOperationException("Action requires item");
+        if(RequiresItem[(int)action]) throw new InvalidOperationException("Action requires item");
     }
     
     public override string ToString()
     {
-        string ret = _actionType switch
+        string ret = Action switch
         {
             ActionType.MoveUp => "Player moved up",
             ActionType.MoveRight => "Player moved right",
