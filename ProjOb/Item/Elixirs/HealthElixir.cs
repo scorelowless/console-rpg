@@ -7,7 +7,7 @@ public class HealthElixir : Item, IElixir
     {
         OnUse = () =>
         {
-            Owner!.Stats["Health"] += Value;
+            Owner!.Stats[Entity.StatsType.Health] += Value;
             return (true, null);
         };
     }

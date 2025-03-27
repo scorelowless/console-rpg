@@ -10,7 +10,7 @@ public abstract class Entity : IMappable
     private readonly IHeldable?[] _heldItems;
 
     public char Display { get; }
-    public Dictionary<string, int> Stats { get; }
+    public Dictionary<StatsType, int> Stats { get; }
 
     public ImmutableArray<IHeldable?> HeldItems => [.._heldItems];
 
@@ -23,14 +23,14 @@ public abstract class Entity : IMappable
         Position = position;
         IsHandTaken = [false, false];
         _heldItems = [null, null];
-        Stats = new Dictionary<string, int>
+        Stats = new Dictionary<StatsType, int>
         {
-            { "Power", 10 },
-            { "Agility", 10 },
-            { "Health", 10 },
-            { "Luck", 10 },
-            { "Aggression", 10 },
-            { "Wisdom", 10 }
+            { StatsType.Power, 10 },
+            { StatsType.Agility, 10 },
+            { StatsType.Health, 10 },
+            { StatsType.Luck, 10 },
+            { StatsType.Aggression, 10 },
+            { StatsType.Wisdom, 10 }
         };
     }
 
@@ -76,5 +76,14 @@ public abstract class Entity : IMappable
         }
         return ret;
     }
-    
+
+    public enum StatsType
+    {
+        Power,
+        Agility,
+        Health,
+        Luck,
+        Aggression,
+        Wisdom,
+    }
 }

@@ -7,9 +7,9 @@ public class Wise : EffectWeapon
     {
         OnUseCustom = () =>
         {
-            Weapon.Owner!.Stats["Wisdom"] += Value;
+            Weapon.Owner!.Stats[Entity.StatsType.Wisdom] += Value;
             return (true, this);
         };
-        OnUnequipCustom = () => Weapon.Owner!.Stats["Wisdom"] -= Value;
+        OnUnequipCustom = () => Weapon.Owner!.Stats[Entity.StatsType.Wisdom] -= Value;
     }
 }

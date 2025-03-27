@@ -7,9 +7,9 @@ public class Lucky : EffectWeapon
     {
         OnUseCustom = () =>
         {
-            Weapon.Owner!.Stats["Luck"] += Value;
+            Weapon.Owner!.Stats[Entity.StatsType.Luck] += Value;
             return (true, this);
         };
-        OnUnequipCustom = () => Weapon.Owner!.Stats["Luck"] -= Value;
+        OnUnequipCustom = () => Weapon.Owner!.Stats[Entity.StatsType.Luck] -= Value;
     }
 }

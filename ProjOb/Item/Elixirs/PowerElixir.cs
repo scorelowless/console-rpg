@@ -8,7 +8,7 @@ public class PowerElixir : Item,  IElixir
     {
         OnUse = () =>
         {
-            Owner!.Stats["Power"] += Value;
+            Owner!.Stats[Entity.StatsType.Power] += Value;
             return (true, null);
         };
     }

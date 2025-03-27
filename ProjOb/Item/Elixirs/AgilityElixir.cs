@@ -7,7 +7,7 @@ public class AgilityElixir : Item, IElixir
     {
         OnUse = () =>
         {
-            Owner!.Stats["Agility"] += Value;
+            Owner!.Stats[Entity.StatsType.Agility] += Value;
             return (true, null);
         };
     }
