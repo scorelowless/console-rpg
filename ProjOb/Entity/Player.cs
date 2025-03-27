@@ -51,6 +51,7 @@ public class Player : Entity
             Direction.Left => "Player moved left",
             _ => ""
         };
+        if (NearbyEnemy != null) LastAction += $"and encountered {NearbyEnemy.Name}";
         OnUpdate?.Invoke();
     }
 
@@ -67,9 +68,10 @@ public class Player : Entity
         int ind = GetEmptyInventorySlot();
         if (ind == -1) return;
         var temp = Position.Pick();
-        temp?.OnPickUp(this);
+        if (temp == null) return;
+        temp.OnPickUp(this);
         _inventory[ind] = temp;
-        LastAction = temp == null ? LastAction : $"Player picked up {temp.Name}";
+        LastAction = $"Player picked up {temp.Name}";
         OnUpdate?.Invoke();
     }
 

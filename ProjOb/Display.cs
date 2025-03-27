@@ -18,7 +18,7 @@ public class Display
         _player = player;
         _instructions = instructions;
         player.OnUpdate += Update;
-        map.OnUpdate += UpdateTile;
+        //map.OnUpdate += UpdateTile;
         _instance = this;
         Console.SetWindowSize(MaxSize.X,  MaxSize.Y);
         Update();
