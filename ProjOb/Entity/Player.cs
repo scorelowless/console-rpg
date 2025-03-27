@@ -13,7 +13,7 @@ public class Player : Entity
     // 2. log recent player action
     public event Action? OnUpdate;
     private readonly IItem?[] _inventory;
-    public string LastAction { get; private set; } = "";
+    public LastAction LastAction { get; private set; } = new(ProjOb.LastAction.ActionType.None);
     public Enemy? NearbyEnemy { get; private set; }
     public ImmutableArray<IItem?> Inventory => [.._inventory];
 
@@ -45,13 +45,12 @@ public class Player : Entity
                       null;
         LastAction = direction switch
         {
-            Direction.Up => "Player moved up",
-            Direction.Right => "Player moved right",
-            Direction.Down => "Player moved down",
-            Direction.Left => "Player moved left",
-            _ => ""
+            Direction.Up => new LastAction(LastAction.ActionType.MoveUp, null, NearbyEnemy),
+            Direction.Right => new LastAction(LastAction.ActionType.MoveRight, null, NearbyEnemy),
+            Direction.Down => new LastAction(LastAction.ActionType.MoveDown, null, NearbyEnemy),
+            Direction.Left => new LastAction(LastAction.ActionType.MoveLeft, null, NearbyEnemy),
+            _ => new LastAction(LastAction.ActionType.None),
         };
-        if (NearbyEnemy != null) LastAction += $"and encountered {NearbyEnemy.Name}";
         OnUpdate?.Invoke();
     }
 
@@ -71,7 +70,7 @@ public class Player : Entity
         if (temp == null) return;
         temp.OnPickUp(this);
         _inventory[ind] = temp;
-        LastAction = $"Player picked up {temp.Name}";
+        LastAction = new LastAction(LastAction.ActionType.PickUp, temp);
         OnUpdate?.Invoke();
     }
 
@@ -80,7 +79,7 @@ public class Player : Entity
         if (Inventory[SelectedItem] == null) return;
         Position.AddItem(Inventory[SelectedItem]!);
         Inventory[SelectedItem]!.OnThrow();
-        LastAction = $"Player threw {Inventory[SelectedItem]!.Name} away";
+        LastAction = new LastAction(LastAction.ActionType.ThrowAway, Inventory[SelectedItem]);
         _inventory[SelectedItem] = null;
         OnUpdate?.Invoke();
     }
@@ -91,7 +90,7 @@ public class Player : Entity
         if (I == null) return;
         var res = I.OnUse(); // try to use item
         if (!res.Item1) return; // if it cannot be used
-        LastAction = $"Player used {I.Name}";
+        LastAction = new LastAction(LastAction.ActionType.Use, res.Item2);
         if (res.Item2 == null) // if item after use is used (null)
         {
             _inventory[SelectedItem] = null;
@@ -114,7 +113,7 @@ public class Player : Entity
         if (t == null) return;
         t.OnUnequip();
         _inventory[ind] = t;
-        LastAction = $"Player unequipped {t.Name}";
+        LastAction = new LastAction(LastAction.ActionType.Unequip, t);
         OnUpdate?.Invoke();
     }
 
