@@ -10,10 +10,12 @@ public class Display
     private readonly Map _map;
     private readonly Player _player;
     private readonly string _instructions;
-    private static readonly (int X, int Y) DefaultCursorPos = (0, 30);
-    private static readonly (int X, int Y) MaxSize = (200, 40);
-    private static void ResetCursor() => Console.SetCursorPosition(DefaultCursorPos.X, DefaultCursorPos.Y);
-    private static void SetCursor((int x, int y) p) => Console.SetCursorPosition(p.x, p.y);
+    private static readonly Point DefaultCursorPos = new(0, 30);
+    private static readonly Point MaxSize = new(200, 40);
+    private static void SetCursor(Point p) => Console.SetCursorPosition(p.X, p.Y);
+    private static void SetCursor(int x, int y) => Console.SetCursorPosition(x, y);
+    private static void ResetCursor() => SetCursor(DefaultCursorPos);
+    
     private Display(Map map, Player player, string instructions)
     {
         _map = map;
@@ -45,35 +47,35 @@ public class Display
 
     private void UpdateTile(Point p)
     {
-        Console.SetCursorPosition(p.X, p.Y);
+        SetCursor(p);
         Console.Write(_map[p.X, p.Y].Print());
-        Console.SetCursorPosition(DefaultCursorPos.X, DefaultCursorPos.Y);
+        ResetCursor();
     }
     private void UpdatePlayer()
     {
-        Console.SetCursorPosition(0, 0);
+        SetCursor(0, 0);
         foreach (string line in DisplayPlayer())
         {
             Console.SetCursorPosition(MapBuilder.MapSizeX + Offset, Console.CursorTop);
             Console.WriteLine(line);
         }
-        Console.SetCursorPosition(0, 21);
+        SetCursor(0, 21);
         Console.WriteLine("Log:");
         Console.WriteLine(_player.LastAction);
-        Console.SetCursorPosition(DefaultCursorPos.X, DefaultCursorPos.Y);
+        ResetCursor();
     }
 
     private void UpdateInstructions()
     {
-        Console.SetCursorPosition(0, 24);
+        SetCursor(0, 24);
         Console.Write(_instructions);
     }
 
     public static void Log(string message)
     {
-        Console.SetCursorPosition(0, 22);
+        SetCursor(0, 22);
         Console.WriteLine(message);
-        Console.SetCursorPosition(DefaultCursorPos.X, DefaultCursorPos.Y);
+        ResetCursor();
     }
     
     private IEnumerable<string> DisplayPlayer()
