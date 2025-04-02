@@ -12,6 +12,8 @@ public class Display
     private readonly string _instructions;
     private static readonly (int X, int Y) DefaultCursorPos = (0, 30);
     private static readonly (int X, int Y) MaxSize = (200, 40);
+    private static void ResetCursor() => Console.SetCursorPosition(DefaultCursorPos.X, DefaultCursorPos.Y);
+    private static void SetCursor((int x, int y) p) => Console.SetCursorPosition(p.x, p.y);
     private Display(Map map, Player player, string instructions)
     {
         _map = map;
@@ -44,7 +46,7 @@ public class Display
     private void UpdateTile(Point p)
     {
         Console.SetCursorPosition(p.X, p.Y);
-        Console.Write(_map[p.X, p.Y].Print() );
+        Console.Write(_map[p.X, p.Y].Print());
         Console.SetCursorPosition(DefaultCursorPos.X, DefaultCursorPos.Y);
     }
     private void UpdatePlayer()
@@ -56,7 +58,7 @@ public class Display
             Console.WriteLine(line);
         }
         Console.SetCursorPosition(0, 21);
-        Console.WriteLine("Last action:");
+        Console.WriteLine("Log:");
         Console.WriteLine(_player.LastAction);
         Console.SetCursorPosition(DefaultCursorPos.X, DefaultCursorPos.Y);
     }

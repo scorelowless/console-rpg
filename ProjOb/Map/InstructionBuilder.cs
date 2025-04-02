@@ -4,10 +4,10 @@ namespace ProjOb;
 
 public class InstructionBuilder : IMapBuilder
 {
-    private bool _hasItems = false;
-    private bool _hasUsables = false;
-    private bool _hasWeapons = false;
-    private bool _hasEnemies = false;
+    private bool _hasItems;
+    private bool _hasUsables;
+    private bool _hasWeapons;
+    private bool _hasEnemies;
     private readonly StringBuilder _text = new();
     public void Reset()
     {

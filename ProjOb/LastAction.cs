@@ -5,14 +5,14 @@ public class LastAction
     private readonly IItem? _involvedItem;
     private ActionType Action { get; }
     private readonly Enemy? _encounteredEnemy;
-    private static readonly bool[] RequiresItem = [false, false, false, false, true, true, true, true];
+    private static readonly bool[] RequiresItem = [false, false, false, false, false, true, true, true, true];
 
     public LastAction(ActionType action, IItem? involvedItem = null, Enemy? encounteredEnemy = null)
     {
         Action = action;
         _involvedItem = involvedItem;
         _encounteredEnemy = encounteredEnemy;
-        if(RequiresItem[(int)action]) throw new InvalidOperationException("Action requires item");
+        if(RequiresItem[(int)action] && _involvedItem == null) throw new InvalidOperationException("Action requires item");
     }
     
     public override string ToString()

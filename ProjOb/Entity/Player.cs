@@ -11,9 +11,9 @@ public class Player : Entity
     // TODO: split OnUpdate into array of events and
     // 1. update every element individually
     // 2. log recent player action
-    public event Action? OnUpdate;
+    public Action? OnUpdate;
     private readonly IItem?[] _inventory;
-    public LastAction LastAction { get; private set; } = new(ProjOb.LastAction.ActionType.None);
+    public LastAction LastAction { get; private set; } = new(LastAction.ActionType.None);
     public Enemy? NearbyEnemy { get; private set; }
     public ImmutableArray<IItem?> Inventory => [.._inventory];
 
@@ -90,7 +90,7 @@ public class Player : Entity
         if (I == null) return;
         var res = I.OnUse(); // try to use item
         if (!res.Item1) return; // if it cannot be used
-        LastAction = new LastAction(LastAction.ActionType.Use, res.Item2);
+        LastAction = new LastAction(LastAction.ActionType.Use, I);
         if (res.Item2 == null) // if item after use is used (null)
         {
             _inventory[SelectedItem] = null;
