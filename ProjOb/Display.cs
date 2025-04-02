@@ -66,6 +66,13 @@ public class Display
         Console.SetCursorPosition(0, 24);
         Console.Write(_instructions);
     }
+
+    public static void Log(string message)
+    {
+        Console.SetCursorPosition(0, 22);
+        Console.WriteLine(message);
+        Console.SetCursorPosition(DefaultCursorPos.X, DefaultCursorPos.Y);
+    }
     
     private IEnumerable<string> DisplayPlayer()
     {
