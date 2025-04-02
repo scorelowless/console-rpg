@@ -210,14 +210,13 @@ public class MapBuilder : IMapBuilder
         CheckNull();
         foreach (Tile tile in GetTiles(n))
         {
-            IElixir elixir = _r.NextDouble() switch
+            IElixirItem elixirItem = _r.NextDouble() switch
             {
-                < 0.3 => new PowerElixir(),
-                < 0.6 => new AgilityElixir(),
-                < 0.9 => new HealthElixir(),
-                _ => new StrongPowerElixir()
+                < 0.3 => new PowerElixirItem(),
+                < 0.6 => new AgilityElixirItem(),
+                _ => new HealthElixirItem(),
             };
-            tile.AddItem(elixir);
+            tile.AddItem(elixirItem);
         }
     }
 

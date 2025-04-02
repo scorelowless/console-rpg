@@ -1,9 +1,9 @@
 namespace ProjOb.Elixirs;
 
-public class HealthElixir : Item, IElixir
+public class HealthElixirItem : Item, IElixirItem
 {
     private const int Value = 5;
-    public HealthElixir() : base("Health elixir", 'E')
+    public HealthElixirItem() : base("Health elixir", 'E')
     {
         OnUse = () =>
         {

@@ -1,5 +1,7 @@
 using System.Collections.Immutable;
 using ProjOb.Currencies;
+using ProjOb.Tours;
+using ProjOb.Tours.ElixirEffect;
 
 namespace ProjOb;
 
@@ -8,10 +10,8 @@ public class Player : Entity
     private const int InventorySize = 20;
     public int SelectedItem { get; private set; }
     
-    // TODO: split OnUpdate into array of events and
-    // 1. update every element individually
-    // 2. log recent player action
-    public Action? OnUpdate;
+    // TODO: split OnUpdate into array of events and update every element individually
+    public event Action? OnUpdate;
     private readonly IItem?[] _inventory;
     public LastAction LastAction { get; private set; } = new(LastAction.ActionType.None);
     public Enemy? NearbyEnemy { get; private set; }
@@ -45,10 +45,10 @@ public class Player : Entity
                       null;
         LastAction = direction switch
         {
-            Direction.Up => new LastAction(LastAction.ActionType.MoveUp, null, NearbyEnemy),
-            Direction.Right => new LastAction(LastAction.ActionType.MoveRight, null, NearbyEnemy),
-            Direction.Down => new LastAction(LastAction.ActionType.MoveDown, null, NearbyEnemy),
-            Direction.Left => new LastAction(LastAction.ActionType.MoveLeft, null, NearbyEnemy),
+            Direction.Up => new LastAction(LastAction.ActionType.MoveUp, encounteredEnemy: NearbyEnemy),
+            Direction.Right => new LastAction(LastAction.ActionType.MoveRight, encounteredEnemy: NearbyEnemy),
+            Direction.Down => new LastAction(LastAction.ActionType.MoveDown, encounteredEnemy: NearbyEnemy),
+            Direction.Left => new LastAction(LastAction.ActionType.MoveLeft, encounteredEnemy: NearbyEnemy),
             _ => new LastAction(LastAction.ActionType.None),
         };
         OnUpdate?.Invoke();

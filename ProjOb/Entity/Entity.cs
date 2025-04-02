@@ -1,4 +1,6 @@
 using System.Collections.Immutable;
+using ProjOb.Tours;
+using ProjOb.Tours.ElixirEffect;
 
 namespace ProjOb;
 
@@ -15,6 +17,9 @@ public abstract class Entity : IMappable
     public ImmutableArray<IHeldable?> HeldItems => [.._heldItems];
 
     private bool[] IsHandTaken { get; }
+    
+    private readonly List<IEffect> _effects = [];
+    private readonly List<ITourWatch> _tourSubscribers = [];
 
     protected Entity(string name, char display, Tile position)
     {
@@ -75,6 +80,26 @@ public abstract class Entity : IMappable
             IsHandTaken[1] = false;
         }
         return ret;
+    }
+    protected void NextTour()
+    {
+        foreach (ITourWatch watcher in _tourSubscribers)
+        {
+            watcher.Update();
+        }
+    }
+    public void AddSubscriber(ITourWatch watcher) => _tourSubscribers.Add(watcher);
+    public void RemoveSubscriber(ITourWatch watcher) => _tourSubscribers.Remove(watcher);
+
+    public void AddEffect(IEffect effect)
+    {
+        _effects.Add(effect);
+        AddSubscriber(effect);
+    }
+    public void RemoveEffect(IEffect effect)
+    {
+        _effects.Remove(effect);
+        RemoveSubscriber(effect);
     }
 
     public enum StatsType
