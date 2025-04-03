@@ -26,6 +26,7 @@ public class Display
         //map.OnUpdate += UpdateTile;
         _instance = this;
         Console.SetWindowSize(MaxSize.X,  MaxSize.Y);
+        Console.CursorVisible = false;
         Update();
     }
 
@@ -46,12 +47,12 @@ public class Display
         UpdatePlayer();
     }
 
-    private void UpdateTile(Point p)
-    {
-        SetCursor(p);
-        Console.Write(_map[p.X, p.Y].Print());
-        ResetCursor();
-    }
+    // private void UpdateTile(Point p)
+    // {
+    //     SetCursor(p);
+    //     Console.Write(_map[p.X, p.Y].Print());
+    //     ResetCursor();
+    // }
     private void UpdatePlayer()
     {
         SetCursor(0, 0);
@@ -110,12 +111,15 @@ public class Display
                 yield return $"{effect.Name}: {effect.ToursLeft} tours left";
             }
         }
-        yield return "------------------------------------------";
-        yield return "Contents of the tile:";
-        foreach (var item in _player.Position)
+        if (_player.Position.ContainsItems)
         {
-            if (item.Name == "Player") continue;
-            yield return item.Name;
+            yield return "------------------------------------------";
+            yield return "Contents of the tile:";
+            foreach (var item in _player.Position)
+            {
+                if (item.Name == "Player") continue;
+                yield return item.Name;
+            }
         }
         if (_player.NearbyEnemy != null)
         {

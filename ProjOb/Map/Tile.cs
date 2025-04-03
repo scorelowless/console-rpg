@@ -76,6 +76,8 @@ public class Tile : IEnumerable<IMappable>
     {
         return _enemies.Count == 0 ? null : _enemies[0];
     }
+
+    public bool ContainsItems => _items.Count != 0;
     
     public IEnumerator<IMappable> GetEnumerator()
     {

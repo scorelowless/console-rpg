@@ -121,6 +121,6 @@ public abstract class Entity : IMappable
         Health,
         Luck,
         Aggression,
-        Wisdom,
+        Wisdom
     }
 }
