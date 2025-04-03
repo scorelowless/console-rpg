@@ -49,8 +49,8 @@ public class Player : Entity
             Direction.Left => new LastAction(LastAction.ActionType.MoveLeft, encounteredEnemy: NearbyEnemy),
             _ => new LastAction(LastAction.ActionType.None),
         };
-        OnUpdate?.Invoke();
         NextTour();
+        OnUpdate?.Invoke();
     }
 
     private int GetEmptyInventorySlot()
@@ -70,8 +70,8 @@ public class Player : Entity
         temp.OnPickUp(this);
         _inventory[ind] = temp;
         LastAction = new LastAction(LastAction.ActionType.PickUp, temp);
-        OnUpdate?.Invoke();
         NextTour();
+        OnUpdate?.Invoke();
     }
 
     public void ThrowAway()
@@ -81,8 +81,8 @@ public class Player : Entity
         Inventory[SelectedItem]!.OnThrow();
         LastAction = new LastAction(LastAction.ActionType.ThrowAway, Inventory[SelectedItem]);
         _inventory[SelectedItem] = null;
-        OnUpdate?.Invoke();
         NextTour();
+        OnUpdate?.Invoke();
     }
 
     public void Use()
@@ -95,8 +95,8 @@ public class Player : Entity
         if (res.Item2 == null) // if item after use is used (null)
         {
             _inventory[SelectedItem] = null;
-            OnUpdate?.Invoke();
             NextTour();
+            OnUpdate?.Invoke();
             return;
         }
         IHeldable? h = res.Item2.ToHeldable();
@@ -104,8 +104,8 @@ public class Player : Entity
         {
             _inventory[SelectedItem] = null;
         }
-        OnUpdate?.Invoke();
         NextTour();
+        OnUpdate?.Invoke();
     }
 
     public void Unequip()
@@ -117,8 +117,8 @@ public class Player : Entity
         t.OnUnequip();
         _inventory[ind] = t;
         LastAction = new LastAction(LastAction.ActionType.Unequip, t);
-        OnUpdate?.Invoke();
         NextTour();
+        OnUpdate?.Invoke();
     }
 
     public void SelectedItemIncrement()
