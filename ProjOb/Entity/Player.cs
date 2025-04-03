@@ -74,13 +74,31 @@ public class Player : Entity
         OnUpdate?.Invoke();
     }
 
+    private IItem? DropItem(int position)
+    {
+        if (_inventory[position] == null) return null;
+        Position.AddItem(_inventory[position]!);
+        _inventory[position]!.OnThrow();
+        IItem? ret = _inventory[position];
+        _inventory[position] = null;
+        return ret;
+    }
     public void ThrowAway()
     {
-        if (Inventory[SelectedItem] == null) return;
-        Position.AddItem(Inventory[SelectedItem]!);
-        Inventory[SelectedItem]!.OnThrow();
-        LastAction = new LastAction(LastAction.ActionType.ThrowAway, Inventory[SelectedItem]);
-        _inventory[SelectedItem] = null;
+        IItem? item = DropItem(SelectedItem);
+        if (item == null) return;
+        LastAction = new LastAction(LastAction.ActionType.ThrowAway, item);
+        NextTour();
+        OnUpdate?.Invoke();
+    }
+
+    public void DropEverythingNow()
+    {
+        for (int i = 0; i < InventorySize; i++)
+        {
+            DropItem(i);
+        }
+        LastAction = new LastAction(LastAction.ActionType.DropEverything);
         NextTour();
         OnUpdate?.Invoke();
     }
