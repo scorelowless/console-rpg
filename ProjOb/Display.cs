@@ -63,6 +63,12 @@ public class Display
         SetCursor(0, 21);
         Console.WriteLine("Log:");
         Console.WriteLine(_player.LastAction);
+        SetCursor(100, 0);
+        foreach (string line in DisplayInventory())
+        {
+            Console.SetCursorPosition(100, Console.CursorTop);
+            Console.WriteLine(line);
+        }
         ResetCursor();
     }
 
@@ -116,15 +122,18 @@ public class Display
             yield return "------------------------------------------";
             yield return $"Nearby Enemy: {_player.NearbyEnemy.Name}";
         }
-        
-        yield return "------------------------------------------";
-        yield return $"Inventory: (Selected item: {_player.Inventory[_player.SelectedItem]?.Name ?? "Nothing"})";
-        foreach (var item in _player.Inventory)
+    }
+
+    private IEnumerable<string> DisplayInventory()
+    {
+        yield return $"Inventory: (Selected item: {_player.Inventory.CurrentItem?.Value.Name ?? "Nothing"})";
+        int num = 1;
+        foreach (var item in _player.Inventory.Get)
         {
-            if (item == null) continue;
-            yield return item.Name;
+            yield return $"{num}. {item.Name}";
             if(item.Info != "")
                 yield return "  " + item.Info;
+            num++;
         }
     }
 

@@ -27,8 +27,8 @@ public class KeyControlBuilder : IMapBuilder
                             ), ConsoleKey.S, () => Game.GetPlayer!.Move(Direction.Down)
                         ), ConsoleKey.D, () => Game.GetPlayer!.Move(Direction.Right)
                     ), ConsoleKey.Escape, Game.CurrentGame!.Stop
-                ), ConsoleKey.OemComma, Game.GetPlayer!.SelectedItemDecrement
-            ), ConsoleKey.OemPeriod, Game.GetPlayer!.SelectedItemIncrement
+                ), ConsoleKey.OemComma, Game.GetPlayer!.Inventory.SelectedItemDecrement
+            ), ConsoleKey.OemPeriod, Game.GetPlayer!.Inventory.SelectedItemIncrement
         );
         _hasItems = false;
         _hasUsables = false;

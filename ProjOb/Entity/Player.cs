@@ -1,25 +1,19 @@
-using System.Collections.Immutable;
 using ProjOb.Currencies;
 
 namespace ProjOb;
 
 public class Player : Entity
 {
-    private const int InventorySize = 20;
-    public int SelectedItem { get; private set; }
-    
     // TODO: split OnUpdate into array of events and update every element individually
     public event Action? OnUpdate;
-    private readonly IItem?[] _inventory;
+    private readonly LinkedList<IItem> _inventory = [];
     public LastAction LastAction { get; private set; } = new(LastAction.ActionType.None);
     public Enemy? NearbyEnemy { get; private set; }
-    public ImmutableArray<IItem?> Inventory => [.._inventory];
-
+    public Inventory Inventory { get; } = new();
     public Dictionary<string, ICurrency> Currencies { get; }
 
     public Player(Map map) : base("Player", '¶', map[0,0])
     {
-        _inventory = new IItem?[InventorySize];
         Currencies = new Dictionary<string, ICurrency>
         {
             { "Money", new Money(0) },
@@ -53,40 +47,28 @@ public class Player : Entity
         OnUpdate?.Invoke();
     }
 
-    private int GetEmptyInventorySlot()
-    {
-        for(int i = 0; i < InventorySize; i++)
-            if (Inventory[i] == null)
-                return i;
-        return -1;
-    }
-
     public void PickUp()
     {
-        int ind = GetEmptyInventorySlot();
-        if (ind == -1) return;
+        if (Inventory.IsFull)
+        {
+            ProjOb.Display.Log("Inventory full!");
+            return;
+        }
         var temp = Position.Pick();
         if (temp == null) return;
         temp.OnPickUp(this);
-        _inventory[ind] = temp;
+        Inventory.Add(temp);
         LastAction = new LastAction(LastAction.ActionType.PickUp, temp);
         NextTour();
         OnUpdate?.Invoke();
     }
-
-    private IItem? DropItem(int position)
-    {
-        if (_inventory[position] == null) return null;
-        Position.AddItem(_inventory[position]!);
-        _inventory[position]!.OnThrow();
-        IItem? ret = _inventory[position];
-        _inventory[position] = null;
-        return ret;
-    }
+    
     public void ThrowAway()
     {
-        IItem? item = DropItem(SelectedItem);
+        IItem? item = Inventory.RemoveSelected();
         if (item == null) return;
+        Position.AddItem(item);
+        item.OnThrow();
         LastAction = new LastAction(LastAction.ActionType.ThrowAway, item);
         NextTour();
         OnUpdate?.Invoke();
@@ -94,9 +76,11 @@ public class Player : Entity
 
     public void DropEverythingNow()
     {
-        for (int i = 0; i < InventorySize; i++)
+        while (_inventory.Count > 0)
         {
-            DropItem(i);
+            IItem? item = Inventory.RemoveSelected();
+            Position.AddItem(item!);
+            item!.OnThrow();
         }
         LastAction = new LastAction(LastAction.ActionType.DropEverything);
         NextTour();
@@ -105,22 +89,22 @@ public class Player : Entity
 
     public void Use()
     {
-        IItem? I = Inventory[SelectedItem];
-        if (I == null) return;
+        if (Inventory.CurrentItem == null) return;
+        IItem I = Inventory.CurrentItem.Value;
         var res = I.OnUse(); // try to use item
         if (!res.Item1) return; // if it cannot be used
         LastAction = new LastAction(LastAction.ActionType.Use, I);
         if (res.Item2 == null) // if item after use is used (null)
         {
-            _inventory[SelectedItem] = null;
-            NextTour();
-            OnUpdate?.Invoke();
-            return;
+            Inventory.RemoveSelected();
         }
-        IHeldable? h = res.Item2.ToHeldable();
-        if(h != null && Grab(h)) // if the item is IHeldable and can be grabbed
+        else
         {
-            _inventory[SelectedItem] = null;
+            IHeldable? h = res.Item2.ToHeldable();
+            if(h != null && Grab(h)) // if the item is IHeldable and can be grabbed
+            {
+                Inventory.RemoveSelected();
+            }
         }
         NextTour();
         OnUpdate?.Invoke();
@@ -128,28 +112,17 @@ public class Player : Entity
 
     public void Unequip()
     {
-        int ind = GetEmptyInventorySlot();
-        if (ind == -1) return;
+        if (Inventory.IsFull)
+        {
+            ProjOb.Display.Log("Inventory full!");
+            return;
+        }
         var t = Ungrab();
         if (t == null) return;
         t.OnUnequip();
-        _inventory[ind] = t;
+        Inventory.Add(t);
         LastAction = new LastAction(LastAction.ActionType.Unequip, t);
         NextTour();
-        OnUpdate?.Invoke();
-    }
-
-    public void SelectedItemIncrement()
-    {
-        SelectedItem++;
-        SelectedItem %= InventorySize;
-        OnUpdate?.Invoke();
-    }
-    
-    public void SelectedItemDecrement()
-    {
-        SelectedItem += InventorySize - 1;
-        SelectedItem %= InventorySize;
         OnUpdate?.Invoke();
     }
 }
