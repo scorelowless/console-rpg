@@ -9,9 +9,20 @@ public class InstructionBuilder : IMapBuilder
     private bool _hasWeapons;
     private bool _hasEnemies;
     private readonly StringBuilder _text = new();
+
+    public InstructionBuilder()
+    {
+        Reset();
+    }
     public void Reset()
     {
         _text.Clear();
+        _text.Append("""
+                     W, A, S, D - move
+                     <, > - change selected item
+                     Esc - exit
+                     
+                     """);
         _hasItems = false;
         _hasUsables = false;
         _hasWeapons = false;

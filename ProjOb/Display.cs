@@ -10,7 +10,7 @@ public class Display
     private readonly Map _map;
     private readonly Player _player;
     private readonly string _instructions;
-    private static readonly Point DefaultCursorPos = new(0, 30);
+    private static readonly Point DefaultCursorPos = new(0, 40);
     private static readonly Point MaxSize = new(200, 40);
     private static void SetCursor(Point p) => Console.SetCursorPosition(p.X, p.Y);
     private static void SetCursor(int x, int y) => Console.SetCursorPosition(x, y);

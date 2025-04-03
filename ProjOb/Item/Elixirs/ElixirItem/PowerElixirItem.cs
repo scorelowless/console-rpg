@@ -8,7 +8,7 @@ public class PowerElixirItem : Item,  IElixirItem
     {
         OnUse = () =>
         {
-            _ = new Tours.ElixirEffect.PowerElixirEffect(Owner);
+            _ = new Tours.ElixirEffect.PowerElixirEffect(Owner!);
             return (true, null);
         };
     }

@@ -20,11 +20,15 @@ public class KeyControlBuilder : IMapBuilder
                 new KeyControl(
                     new KeyControl(
                         new KeyControl(
-                            new GuardKeyControl(), ConsoleKey.W, () => Game.GetPlayer!.Move(Direction.Up)
-                        ), ConsoleKey.A, () => Game.GetPlayer!.Move(Direction.Left)
-                    ), ConsoleKey.S, () => Game.GetPlayer!.Move(Direction.Down)
-                ), ConsoleKey.D, () => Game.GetPlayer!.Move(Direction.Right)
-            ), ConsoleKey.Escape, Game.GetGame!.Stop
+                            new KeyControl(
+                                new KeyControl(
+                                    new GuardKeyControl(), ConsoleKey.W, () => Game.GetPlayer!.Move(Direction.Up)
+                                ), ConsoleKey.A, () => Game.GetPlayer!.Move(Direction.Left)
+                            ), ConsoleKey.S, () => Game.GetPlayer!.Move(Direction.Down)
+                        ), ConsoleKey.D, () => Game.GetPlayer!.Move(Direction.Right)
+                    ), ConsoleKey.Escape, Game.CurrentGame!.Stop
+                ), ConsoleKey.OemComma, Game.GetPlayer!.SelectedItemDecrement
+            ), ConsoleKey.OemPeriod, Game.GetPlayer!.SelectedItemIncrement
         );
         _hasItems = false;
         _hasUsables = false;
@@ -59,7 +63,8 @@ public class KeyControlBuilder : IMapBuilder
     public void AddItems(int n = 1)
     {
         if (_hasItems || n == 0) return;
-        _keyControl = new KeyControl(_keyControl, ConsoleKey.E, () => Game.GetPlayer!.PickUp());
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.E, Game.GetPlayer!.PickUp);
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.Q, Game.GetPlayer!.ThrowAway);
         _hasItems = true;
     }
 
@@ -67,7 +72,7 @@ public class KeyControlBuilder : IMapBuilder
     {
         if (_hasWeapons || n == 0) return;
         if(!_hasUsables) AddCurrencies();
-        _keyControl = new KeyControl(_keyControl, ConsoleKey.R, () => Game.GetPlayer!.Use());
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.T, () => Game.GetPlayer!.Unequip());
         _hasWeapons = true;
     }
 

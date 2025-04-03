@@ -9,7 +9,7 @@ public class AgilityElixirItem : Item, IElixirItem
     {
         OnUse = () =>
         {
-            _ = new AgilityElixirEffect(Owner);
+            _ = new AgilityElixirEffect(Owner!);
             return (true, null);
         };
     }

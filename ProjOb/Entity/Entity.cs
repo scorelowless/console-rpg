@@ -19,7 +19,7 @@ public abstract class Entity : IMappable
     private bool[] IsHandTaken { get; }
     
     private readonly List<IEffect> _effects = [];
-    private readonly List<ITourWatch> _tourSubscribers = [];
+    private readonly List<ITourWatch?> _tourSubscribers = [];
 
     protected Entity(string name, char display, Tile position)
     {
@@ -83,13 +83,23 @@ public abstract class Entity : IMappable
     }
     protected void NextTour()
     {
-        foreach (ITourWatch watcher in _tourSubscribers)
+        // ReSharper disable once ForCanBeConvertedToForeach
+        for (int i = 0; i < _tourSubscribers.Count; i++)
         {
-            watcher.Update();
+            _tourSubscribers[i]?.Update();
         }
+        _tourSubscribers.RemoveAll(t => t == null);
     }
     public void AddSubscriber(ITourWatch watcher) => _tourSubscribers.Add(watcher);
-    public void RemoveSubscriber(ITourWatch watcher) => _tourSubscribers.Remove(watcher);
+
+    public void RemoveSubscriber(ITourWatch watcher)
+    {
+        int ind = _tourSubscribers.IndexOf(watcher);
+        if (ind != -1)
+        {
+            _tourSubscribers[ind] = null;
+        }
+    }
 
     public void AddEffect(IEffect effect)
     {

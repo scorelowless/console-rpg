@@ -1,7 +1,5 @@
 using System.Collections.Immutable;
 using ProjOb.Currencies;
-using ProjOb.Tours;
-using ProjOb.Tours.ElixirEffect;
 
 namespace ProjOb;
 
@@ -52,6 +50,7 @@ public class Player : Entity
             _ => new LastAction(LastAction.ActionType.None),
         };
         OnUpdate?.Invoke();
+        NextTour();
     }
 
     private int GetEmptyInventorySlot()
@@ -72,6 +71,7 @@ public class Player : Entity
         _inventory[ind] = temp;
         LastAction = new LastAction(LastAction.ActionType.PickUp, temp);
         OnUpdate?.Invoke();
+        NextTour();
     }
 
     public void ThrowAway()
@@ -82,6 +82,7 @@ public class Player : Entity
         LastAction = new LastAction(LastAction.ActionType.ThrowAway, Inventory[SelectedItem]);
         _inventory[SelectedItem] = null;
         OnUpdate?.Invoke();
+        NextTour();
     }
 
     public void Use()
@@ -95,6 +96,7 @@ public class Player : Entity
         {
             _inventory[SelectedItem] = null;
             OnUpdate?.Invoke();
+            NextTour();
             return;
         }
         IHeldable? h = res.Item2.ToHeldable();
@@ -103,6 +105,7 @@ public class Player : Entity
             _inventory[SelectedItem] = null;
         }
         OnUpdate?.Invoke();
+        NextTour();
     }
 
     public void Unequip()
@@ -115,6 +118,7 @@ public class Player : Entity
         _inventory[ind] = t;
         LastAction = new LastAction(LastAction.ActionType.Unequip, t);
         OnUpdate?.Invoke();
+        NextTour();
     }
 
     public void SelectedItemIncrement()

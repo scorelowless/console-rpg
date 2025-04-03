@@ -16,7 +16,7 @@ public class AgilityElixirEffect : IEffect
     {
         _toursLeft--;
         if (_toursLeft > 0) return;
-        _owner.RemoveEffect(this);
         _owner.Stats[Entity.StatsType.Agility] -= Value;
+        _owner.RemoveEffect(this);
     }
 }
