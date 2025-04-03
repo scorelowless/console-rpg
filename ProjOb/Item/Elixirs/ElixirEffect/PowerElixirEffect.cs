@@ -2,20 +2,26 @@ namespace ProjOb.Tours.ElixirEffect;
 
 public class PowerElixirEffect : IEffect
 {
-    private int _toursLeft = 10;
     private readonly Entity _owner;
+    public int ToursLeft { get; private set; } = 10 + 1;
+    public string Name => "Power boost";
 
     public PowerElixirEffect(Entity entity)
     {
         _owner = entity;
         entity.AddEffect(this);
-        entity.Stats[Entity.StatsType.Power] += _toursLeft;
+        entity.Stats[Entity.StatsType.Power] += ToursLeft;
     }
     public void Update()
     {
-        _toursLeft--;
+        ToursLeft--;
         _owner.Stats[Entity.StatsType.Power] -= 1;
-        if (_toursLeft > 0) return;
+        if (ToursLeft > 0) return;
         _owner.RemoveEffect(this);
+    }
+
+    public void OnRemove()
+    {
+        _owner.Stats[Entity.StatsType.Power] -= ToursLeft;
     }
 }

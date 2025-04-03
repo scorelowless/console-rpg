@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Text;
+using ProjOb.Tours.ElixirEffect;
 
 namespace ProjOb;
 
@@ -95,6 +96,14 @@ public class Display
         yield return "------------------------------------------";
         yield return $"Left hand: {_player.HeldItems[0]?.Name ?? "Nothing"}";
         yield return $"Right hand: {_player.HeldItems[1]?.Name ?? "Nothing"}";
+        if (_player.Effects.Count != 0)
+        {
+            yield return "------------------------------------------";
+            foreach (IEffect effect in _player.Effects)
+            {
+                yield return $"{effect.Name}: {effect.ToursLeft} tours left";
+            }
+        }
         yield return "------------------------------------------";
         yield return "Contents of the tile:";
         foreach (var item in _player.Position)

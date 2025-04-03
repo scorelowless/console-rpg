@@ -2,9 +2,10 @@ namespace ProjOb.Tours.ElixirEffect;
 
 public class AgilityElixirEffect : IEffect
 {
-    private int _toursLeft = 10;
-    private const int Value = 5;
     private readonly Entity _owner;
+    public int ToursLeft { get; private set; } = 10 + 1;
+    private const int Value = 5;
+    public string Name => "Agility boost";
 
     public AgilityElixirEffect(Entity entity)
     {
@@ -14,9 +15,13 @@ public class AgilityElixirEffect : IEffect
     }
     public void Update()
     {
-        _toursLeft--;
-        if (_toursLeft > 0) return;
-        _owner.Stats[Entity.StatsType.Agility] -= Value;
+        ToursLeft--;
+        if (ToursLeft > 0) return;
         _owner.RemoveEffect(this);
+    }
+
+    public void OnRemove()
+    {
+        _owner.Stats[Entity.StatsType.Agility] -= Value;
     }
 }

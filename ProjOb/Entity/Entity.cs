@@ -19,6 +19,7 @@ public abstract class Entity : IMappable
     private bool[] IsHandTaken { get; }
     
     private readonly List<IEffect> _effects = [];
+    public ImmutableList<IEffect> Effects => _effects.ToImmutableList();
     private readonly List<ITourWatch?> _tourSubscribers = [];
 
     protected Entity(string name, char display, Tile position)
@@ -108,6 +109,7 @@ public abstract class Entity : IMappable
     }
     public void RemoveEffect(IEffect effect)
     {
+        effect.OnRemove();
         _effects.Remove(effect);
         RemoveSubscriber(effect);
     }
