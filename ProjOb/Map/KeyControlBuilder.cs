@@ -65,6 +65,7 @@ public class KeyControlBuilder : IMapBuilder
         if (_hasItems || n == 0) return;
         _keyControl = new KeyControl(_keyControl, ConsoleKey.E, Game.GetPlayer!.PickUp);
         _keyControl = new KeyControl(_keyControl, ConsoleKey.Q, Game.GetPlayer!.ThrowAway);
+        _keyControl = new AdvancedKeyControl(_keyControl, new ConsoleKeyInfo('Q', ConsoleKey.Q, true, false, false), Game.GetPlayer.DropEverythingNow);
         _hasItems = true;
     }
 

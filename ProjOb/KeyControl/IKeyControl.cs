@@ -2,5 +2,5 @@ namespace ProjOb;
 
 public interface IKeyControl
 {
-    public void Check(ConsoleKey key);
+    public void Check(ConsoleKeyInfo key);
 }

@@ -1,14 +1,14 @@
 namespace ProjOb;
 
-public class KeyControl : IKeyControl
+public class AdvancedKeyControl : IKeyControl
 {
     private readonly IKeyControl _baseKeyControl;
-    private readonly ConsoleKey _key;
+    private readonly ConsoleKeyInfo _key;
     private readonly Action _action;
 
     public void Check(ConsoleKeyInfo key)
     {
-        if (key.Key == _key)
+        if (key.Key == _key.Key && key.Modifiers == _key.Modifiers)
         {
             _action();
         }
@@ -18,7 +18,7 @@ public class KeyControl : IKeyControl
         }
     }
 
-    public KeyControl(IKeyControl baseKeyControl, ConsoleKey key,  Action action)
+    public AdvancedKeyControl(IKeyControl baseKeyControl, ConsoleKeyInfo key,  Action action)
     {
         _baseKeyControl = baseKeyControl;
         _key = key;

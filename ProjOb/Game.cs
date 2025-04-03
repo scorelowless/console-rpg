@@ -31,7 +31,7 @@ public class Game
             while (_isRunning)
             {
                 if (!Console.KeyAvailable) continue;
-                _keyControl.Check(Console.ReadKey(true).Key);
+                _keyControl.Check(Console.ReadKey(true));
             }
         });
         keyListenerThread.Start();

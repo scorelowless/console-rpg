@@ -58,6 +58,7 @@ public class InstructionBuilder : IMapBuilder
         if (_hasItems || n == 0) return;
         _text.Append("E: pick up item\n");
         _text.Append("Q: drop item\n");
+        _text.Append("Shift+Q: drop everything\n");
         _hasItems = true;
     }
 
