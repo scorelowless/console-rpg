@@ -21,8 +21,8 @@ public class KeyControlBuilder : IMapBuilder
         _keyControl = new KeyControl(_keyControl, ConsoleKey.S, () => Game.GetPlayer.Move(Direction.Down));
         _keyControl = new KeyControl(_keyControl, ConsoleKey.D, () => Game.GetPlayer.Move(Direction.Right));
         _keyControl = new KeyControl(_keyControl, ConsoleKey.Escape, Game.CurrentGame.Stop);
-        _keyControl = new KeyControl(_keyControl, ConsoleKey.OemComma, Game.GetPlayer.Inventory.SelectedItemDecrement);
-        _keyControl = new KeyControl(_keyControl, ConsoleKey.OemPeriod, Game.GetPlayer.Inventory.SelectedItemIncrement);
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.OemComma, Game.GetPlayer.SelectedItemDecrement);
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.OemPeriod, Game.GetPlayer.SelectedItemIncrement);
         _hasItems = false;
         _hasUsables = false;
         _hasWeapons = false;

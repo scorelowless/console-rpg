@@ -125,4 +125,16 @@ public class Player : Entity
         NextTour();
         OnUpdate?.Invoke();
     }
+
+    public void SelectedItemIncrement()
+    {
+        Inventory.SelectedItemIncrement();
+        OnUpdate?.Invoke();
+    }
+    
+    public void SelectedItemDecrement()
+    {
+        Inventory.SelectedItemDecrement();
+        OnUpdate?.Invoke();
+    }
 }

@@ -19,7 +19,8 @@ public abstract class EffectWeapon : IWeapon
 
     public virtual (bool, IItem?) OnUse()
     {
-        return Weapon.OnUse();
+        Weapon.OnUse();
+        return (true, this);
     }
 
     public virtual void OnUnequip()
