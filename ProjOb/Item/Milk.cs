@@ -1,4 +1,4 @@
-using ProjOb.Tours.ElixirEffect;
+using ProjOb;
 
 namespace ProjOb;
 
@@ -6,13 +6,15 @@ public class Milk : Item
 {
     public Milk() : base("Milk", 'M')
     {
-        OnUse = () =>
+        
+    }
+
+    public override (bool, IItem?) OnUse()
+    {
+        foreach (IEffect effect in Owner!.Effects)
         {
-            foreach (IEffect effect in Owner!.Effects)
-            {
-                Owner.RemoveEffect(effect);
-            }
-            return (true, null);
-        };
+            Owner.RemoveEffect(effect);
+        }
+        return (true, null);
     }
 }

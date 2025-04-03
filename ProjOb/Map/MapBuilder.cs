@@ -1,7 +1,5 @@
 using System.Drawing;
-using ProjOb.Currencies;
-using ProjOb.Elixirs;
-using ProjOb.WeaponEffects;
+using ProjOb;
 
 namespace ProjOb;
 
@@ -226,7 +224,7 @@ public class MapBuilder : IMapBuilder
         CheckNull();
         foreach (Tile tile in GetTiles(n))
         {
-            ICurrency currency = _r.NextDouble() switch
+            Currency currency = _r.NextDouble() switch
             {
                 < 0.3 => new Money(_r.Next(100)),
                 _ => new Gold(_r.Next(100))

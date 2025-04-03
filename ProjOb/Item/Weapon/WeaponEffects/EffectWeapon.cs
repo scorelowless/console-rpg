@@ -1,16 +1,31 @@
-namespace ProjOb.WeaponEffects;
+namespace ProjOb;
 
 public abstract class EffectWeapon : IWeapon
 {
     protected readonly IWeapon Weapon;
     private readonly string _effectName;
-    protected Func<(bool, IItem?)> OnUseCustom;
-    protected Action OnUnequipCustom = () => { };
 
     public string Info => $"Damage: {Damage}";
     public Entity? Owner => Weapon.Owner;
-    public Func<(bool, IItem?)> OnUse => Weapon.OnUse + OnUseCustom;
-    public Action OnUnequip => OnUnequipCustom + Weapon.OnUnequip;
+    public virtual void OnPickUp(Entity entity)
+    {
+        Weapon.OnPickUp(entity);
+    }
+
+    public virtual void OnThrow()
+    {
+        Weapon.OnThrow();
+    }
+
+    public virtual (bool, IItem?) OnUse()
+    {
+        return Weapon.OnUse();
+    }
+
+    public virtual void OnUnequip()
+    {
+        Weapon.OnUnequip();
+    }
     public bool IsHeld
     {
         get => Weapon.IsHeld;
@@ -21,19 +36,14 @@ public abstract class EffectWeapon : IWeapon
 
     public char Display => Weapon.Display;
     public string Name => Weapon.Name + _effectName;
-    
-    public IItem ToItem() => this;
-    public IHeldable ToHeldable() => this;
 
-    public Action<Entity> OnPickUp => Weapon.OnPickUp;
-    public Action OnThrow => Weapon.OnThrow;
+    public IHeldable ToHeldable() => this;
 
 
     protected EffectWeapon(IWeapon weapon, string effectName)
     {
         Weapon = weapon;
         _effectName = effectName;
-        OnUseCustom = () => (true, this);
     }
 
     public virtual IWeapon RemoveEffect()

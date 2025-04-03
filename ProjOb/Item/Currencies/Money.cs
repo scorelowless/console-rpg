@@ -1,18 +1,15 @@
-namespace ProjOb.Currencies;
+namespace ProjOb;
 
-public class Money : Item, ICurrency
+public class Money : Currency
 {
-    public int Amount { get; set; }
-    public Player? PlayerOwner => Owner as Player;
-    public override string Info => $"Amount: {Amount}";
-
-    public Money(int amount) : base("Money", '$')
+    public Money(int amount) : base("Money", '$', amount)
     {
-        Amount = amount;
-        OnUse = () =>
-        {
-            PlayerOwner!.Currencies["Money"].Amount += Amount;
-            return (true, null);
-        };
+        
+    }
+
+    public override (bool, IItem?) OnUse()
+    {
+        ((Player)Owner!).Currencies["Money"].Amount += Amount;
+        return (true, null);
     }
 }

@@ -1,5 +1,3 @@
-using System.Drawing;
-
 namespace ProjOb;
 
 public class Stone : Item

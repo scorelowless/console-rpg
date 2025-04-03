@@ -1,15 +1,14 @@
-namespace ProjOb.Elixirs;
+namespace ProjOb;
 
 public class PowerElixirItem : Item,  IElixirItem
 {
-    private const int Value = 5;
-
     public PowerElixirItem() : base("Power elixir", 'E')
     {
-        OnUse = () =>
-        {
-            _ = new Tours.ElixirEffect.PowerElixirEffect(Owner!);
-            return (true, null);
-        };
+
+    }
+    public override (bool, IItem?) OnUse()
+    {
+        _ = new PowerElixirEffect(Owner!);
+        return (true, null);
     }
 }

@@ -1,4 +1,4 @@
-namespace ProjOb.Elixirs;
+namespace ProjOb;
 
 public interface IElixirItem : IItem
 {

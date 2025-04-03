@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
-using ProjOb.Tours;
-using ProjOb.Tours.ElixirEffect;
+using ProjOb;
 
 namespace ProjOb;
 

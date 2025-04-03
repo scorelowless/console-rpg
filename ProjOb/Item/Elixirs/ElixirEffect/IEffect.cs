@@ -1,4 +1,4 @@
-namespace ProjOb.Tours.ElixirEffect;
+namespace ProjOb;
 
 public interface IEffect : ITourWatch
 {

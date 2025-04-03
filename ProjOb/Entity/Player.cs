@@ -1,4 +1,4 @@
-using ProjOb.Currencies;
+using ProjOb;
 
 namespace ProjOb;
 
@@ -10,11 +10,11 @@ public class Player : Entity
     public LastAction LastAction { get; private set; } = new(LastAction.ActionType.None);
     public Enemy? NearbyEnemy { get; private set; }
     public Inventory Inventory { get; } = new();
-    public Dictionary<string, ICurrency> Currencies { get; }
+    public Dictionary<string, Currency> Currencies { get; }
 
     public Player(Map map) : base("Player", '¶', map[0,0])
     {
-        Currencies = new Dictionary<string, ICurrency>
+        Currencies = new Dictionary<string, Currency>
         {
             { "Money", new Money(0) },
             { "Gold", new Gold(0) }

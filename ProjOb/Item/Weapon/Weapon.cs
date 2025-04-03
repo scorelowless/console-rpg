@@ -10,9 +10,10 @@ public abstract class Weapon : Item, IWeapon
 
     protected Weapon(string name, char display) : base(name, display)
     {
-        OnUse = () => (IsHeld = true, this);
-        OnUnequip += () => IsHeld = false;
-        OnPickUp += entity => Owner = entity;
-        OnThrow += () => Owner = null;
+        
     }
+
+    public override void OnThrow() => Owner = null;
+    public override void OnUnequip() => IsHeld = false;
+    public override (bool, IItem?) OnUse() => (IsHeld = true, this);
 }

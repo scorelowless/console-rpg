@@ -1,16 +1,14 @@
-using ProjOb.Tours.ElixirEffect;
-
-namespace ProjOb.Elixirs;
+namespace ProjOb;
 
 public class AgilityElixirItem : Item, IElixirItem
 {
-    private const int Value = 5;
     public AgilityElixirItem() : base("Agility elixir", 'E')
     {
-        OnUse = () =>
-        {
-            _ = new AgilityElixirEffect(Owner!);
-            return (true, null);
-        };
+
+    }
+    public override (bool, IItem?) OnUse()
+    {
+        _ = new AgilityElixirEffect(Owner!);
+        return (true, null);
     }
 }

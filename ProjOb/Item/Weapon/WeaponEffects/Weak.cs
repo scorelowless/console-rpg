@@ -1,4 +1,4 @@
-namespace ProjOb.WeaponEffects;
+namespace ProjOb;
 
 public class Weak : EffectWeapon
 {

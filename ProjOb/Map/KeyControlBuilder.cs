@@ -15,21 +15,14 @@ public class KeyControlBuilder : IMapBuilder
     
     public void Reset()
     {
-        _keyControl = new KeyControl(
-            new KeyControl(
-                new KeyControl(
-                    new KeyControl(
-                        new KeyControl(
-                            new KeyControl(
-                                new KeyControl(
-                                    new GuardKeyControl(), ConsoleKey.W, () => Game.GetPlayer!.Move(Direction.Up)
-                                ), ConsoleKey.A, () => Game.GetPlayer!.Move(Direction.Left)
-                            ), ConsoleKey.S, () => Game.GetPlayer!.Move(Direction.Down)
-                        ), ConsoleKey.D, () => Game.GetPlayer!.Move(Direction.Right)
-                    ), ConsoleKey.Escape, Game.CurrentGame!.Stop
-                ), ConsoleKey.OemComma, Game.GetPlayer!.Inventory.SelectedItemDecrement
-            ), ConsoleKey.OemPeriod, Game.GetPlayer!.Inventory.SelectedItemIncrement
-        );
+        _keyControl = new GuardKeyControl();
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.W, () => Game.GetPlayer.Move(Direction.Up));
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.A, () => Game.GetPlayer.Move(Direction.Left));
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.S, () => Game.GetPlayer.Move(Direction.Down));
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.D, () => Game.GetPlayer.Move(Direction.Right));
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.Escape, Game.CurrentGame.Stop);
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.OemComma, Game.GetPlayer.Inventory.SelectedItemDecrement);
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.OemPeriod, Game.GetPlayer.Inventory.SelectedItemIncrement);
         _hasItems = false;
         _hasUsables = false;
         _hasWeapons = false;
@@ -63,8 +56,8 @@ public class KeyControlBuilder : IMapBuilder
     public void AddItems(int n = 1)
     {
         if (_hasItems || n == 0) return;
-        _keyControl = new KeyControl(_keyControl, ConsoleKey.E, Game.GetPlayer!.PickUp);
-        _keyControl = new KeyControl(_keyControl, ConsoleKey.Q, Game.GetPlayer!.ThrowAway);
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.E, Game.GetPlayer.PickUp);
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.Q, Game.GetPlayer.ThrowAway);
         _keyControl = new AdvancedKeyControl(_keyControl, new ConsoleKeyInfo('Q', ConsoleKey.Q, true, false, false), Game.GetPlayer.DropEverythingNow);
         _hasItems = true;
     }
@@ -73,7 +66,7 @@ public class KeyControlBuilder : IMapBuilder
     {
         if (_hasWeapons || n == 0) return;
         if(!_hasUsables) AddCurrencies();
-        _keyControl = new KeyControl(_keyControl, ConsoleKey.T, () => Game.GetPlayer!.Unequip());
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.T, () => Game.GetPlayer.Unequip());
         _hasWeapons = true;
     }
 
@@ -91,7 +84,7 @@ public class KeyControlBuilder : IMapBuilder
     {
         if (_hasUsables || n == 0) return;
         if (!_hasItems) AddItems();
-        _keyControl = new KeyControl(_keyControl, ConsoleKey.R, () => Game.GetPlayer!.Use());
+        _keyControl = new KeyControl(_keyControl, ConsoleKey.R, () => Game.GetPlayer.Use());
         _hasUsables = true;
     }
 

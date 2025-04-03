@@ -5,12 +5,14 @@ public class Game
     private bool _isRunning = true;
     private readonly Player _player;
     private readonly KeyControl _keyControl;
-    public static Game? CurrentGame { get; private set; }
+    private static Game _currentGame = null!;
 
-    public static Player? GetPlayer => CurrentGame?._player;
+    public static Game CurrentGame => _currentGame ?? throw new Exception("CurrentGame invoked without invoking NewGame beforehand");
+
+    public static Player GetPlayer => CurrentGame._player;
     private Game()
     {
-        CurrentGame = this;
+        _currentGame = this;
         var map = MapBuilderDirector.GenerateBasicMap(new MapBuilder()) as Map ?? throw new Exception("MapBuilderDirector.GenerateBasicMap returned null");
         string instructions = MapBuilderDirector.GenerateBasicMap(new InstructionBuilder()) as string ?? throw new Exception("MapBuilderDirector.GenerateBasicMap returned null");
         _player = new Player(map);
@@ -20,7 +22,8 @@ public class Game
 
     public static Game NewGame()
     {
-        return CurrentGame ?? new Game();
+        Game _ = new Game();
+        return CurrentGame;
     }
 
     public void Start()

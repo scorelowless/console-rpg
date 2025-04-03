@@ -1,4 +1,4 @@
-namespace ProjOb.Tours;
+namespace ProjOb;
 
 public interface ITourWatch
 {
