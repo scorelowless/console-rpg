@@ -64,38 +64,24 @@ public class MapBuilder : IMapBuilder
     private void AddPath(Point start, Point end)
     {
         // random shortest path between two points
-        bool[] ud = new bool[int.Abs(start.X - end.X)];
-        bool[] lr = new bool[int.Abs(start.Y - end.Y)];
-        for (int i = 0; i < lr.Length; i++)
-        {
-            lr[i] = true;
-        }
-        bool[] dir = lr.Concat(ud).ToArray();
-        for (int i = 0; i < dir.Length; i++)
-        {
-            int j = _r.Next(dir.Length);
-            (dir[i], dir[j]) = (dir[j], dir[i]);
-        }
         bool goesDown = start.X < end.X;
         bool goesRight = start.Y < end.Y;
+        int sizeX = int.Abs(start.X - end.X);
+        int sizeY = int.Abs(start.Y - end.Y);
+        int n = sizeX + sizeY;
         Point current = new Point(start.X, start.Y);
-        foreach (var move in dir)
+        for (int i = 0; i < n; ++i)
         {
             _map![current.X, current.Y].IsNotWall = true;
-            switch (move, goesDown, goesRight)
+            if (_r.Next(n - i) > sizeX - 1)
             {
-                case (true, _, true):
-                    current.Y++;
-                    break;
-                case (true, _, false):
-                    current.Y--;
-                    break;
-                case (false, true, _):
-                    current.X++;
-                    break;
-                case (false, false, _):
-                    current.X--;
-                    break;
+                current.Y += goesRight ? 1 : -1;
+                sizeY--;
+            }
+            else
+            {
+                current.X += goesDown ? 1 : -1;
+                sizeX--;
             }
         }
         _map![current.X, current.Y].IsNotWall = true;
@@ -110,7 +96,33 @@ public class MapBuilder : IMapBuilder
         CheckNull();
         for (int i = 0; i < n; i++)
         {
-            AddPath(new Point(_r.Next(MapSizeX),  _r.Next(MapSizeY)), new Point(_r.Next(MapSizeX), _r.Next(MapSizeY)));
+            switch (_r.Next(4))
+            {
+                case 0:
+                    AddPath(new Point(_r.Next(MapSizeX / 2),
+                            _r.Next(MapSizeY)),
+                        new Point(_r.Next(MapSizeX / 2),
+                            _r.Next(MapSizeY)));
+                    break; // in the left part
+                case 1:
+                    AddPath(new Point(_r.Next(MapSizeX / 2) + MapSizeX / 2,
+                            _r.Next(MapSizeY)),
+                        new Point(_r.Next(MapSizeX / 2) + MapSizeX / 2,
+                            _r.Next(MapSizeY)));
+                    break; // in the right part
+                case 2:
+                    AddPath(new Point(_r.Next(MapSizeX),
+                            _r.Next(MapSizeY / 2)),
+                        new Point(_r.Next(MapSizeX),
+                            _r.Next(MapSizeY / 2)));
+                    break; // in the upper part
+                case 3:
+                    AddPath(new Point(_r.Next(MapSizeX),
+                            _r.Next(MapSizeY / 2) + MapSizeY / 2),
+                        new Point(_r.Next(MapSizeX),
+                            _r.Next(MapSizeY / 2) + MapSizeY / 2));
+                    break; // in the lower part
+            }
         }
     }
 
