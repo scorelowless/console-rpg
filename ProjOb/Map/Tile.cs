@@ -46,11 +46,11 @@ public class Tile : IEnumerable<IMappable>
         OnUpdate?.Invoke();
     }
 
-    public IItem? Pick()
+    public IItem? Pick(int ind)
     {
-        if(_items.Count == 0) return null;
-        IItem item = _items[0];
-        _items.Remove(item);
+        if(_items.Count <= ind) return null;
+        IItem item = _items[ind];
+        _items.RemoveAt(ind);
         OnUpdate?.Invoke();
         return item;
     }

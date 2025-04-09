@@ -21,8 +21,6 @@ public class KeyControlBuilder : IMapBuilder
         _keyControl = new KeyControl(_keyControl, ConsoleKey.S, () => Game.GetPlayer.Move(Direction.Down));
         _keyControl = new KeyControl(_keyControl, ConsoleKey.D, () => Game.GetPlayer.Move(Direction.Right));
         _keyControl = new KeyControl(_keyControl, ConsoleKey.Escape, Game.CurrentGame.Stop);
-        _keyControl = new KeyControl(_keyControl, ConsoleKey.OemComma, Game.GetPlayer.SelectedItemDecrement);
-        _keyControl = new KeyControl(_keyControl, ConsoleKey.OemPeriod, Game.GetPlayer.SelectedItemIncrement);
         _hasItems = false;
         _hasUsables = false;
         _hasWeapons = false;
@@ -56,8 +54,8 @@ public class KeyControlBuilder : IMapBuilder
     public void AddItems(int n = 1)
     {
         if (_hasItems || n == 0) return;
-        _keyControl = new KeyControl(_keyControl, ConsoleKey.E, Game.GetPlayer.PickUp);
-        _keyControl = new KeyControl(_keyControl, ConsoleKey.Q, Game.GetPlayer.ThrowAway);
+        _keyControl = new NumberKeyControl(_keyControl, ConsoleKey.E, Game.GetPlayer.PickUp, "Which item from the tile contents you want to pick up (number or letter)");
+        _keyControl = new NumberKeyControl(_keyControl, ConsoleKey.Q, Game.GetPlayer.ThrowAway, "Which item from the inventory you want to throw away (number or letter)");
         _keyControl = new AdvancedKeyControl(_keyControl, new ConsoleKeyInfo('Q', ConsoleKey.Q, true, false, false), Game.GetPlayer.DropEverythingNow);
         _hasItems = true;
     }
@@ -84,7 +82,7 @@ public class KeyControlBuilder : IMapBuilder
     {
         if (_hasUsables || n == 0) return;
         if (!_hasItems) AddItems();
-        _keyControl = new KeyControl(_keyControl, ConsoleKey.R, () => Game.GetPlayer.Use());
+        _keyControl = new NumberKeyControl(_keyControl, ConsoleKey.R, Game.GetPlayer.Use, "Which item from the inventory you want to use/equip (number or letter)");
         _hasUsables = true;
     }
 

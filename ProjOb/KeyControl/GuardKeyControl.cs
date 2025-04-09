@@ -4,6 +4,6 @@ public class GuardKeyControl : IKeyControl
 {
     public void Check(ConsoleKeyInfo key)
     {
-        Display.Log("This key does nothing");
+        Display.GetInstance().Log("This key does nothing!                  ");
     }
 }

@@ -1,6 +1,5 @@
 using System.Drawing;
 using System.Text;
-using ProjOb;
 
 namespace ProjOb;
 
@@ -11,17 +10,19 @@ public class Display
     private readonly Map _map;
     private readonly Player _player;
     private readonly string _instructions;
-    private static readonly Point DefaultCursorPos = new(0, 40);
+    private readonly Point _defaultCursorPos;
     private static readonly Point MaxSize = new(200, 40);
+    private const string Numbers = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static void SetCursor(Point p) => Console.SetCursorPosition(p.X, p.Y);
     private static void SetCursor(int x, int y) => Console.SetCursorPosition(x, y);
-    private static void ResetCursor() => SetCursor(DefaultCursorPos);
+    private void ResetCursor() => SetCursor(_defaultCursorPos);
     
     private Display(Map map, Player player, string instructions)
     {
         _map = map;
         _player = player;
         _instructions = instructions;
+        _defaultCursorPos = new(0, 20 + 1 + instructions.Count(c => c == '\n') + 1 + 1);
         player.OnUpdate += Update;
         //map.OnUpdate += UpdateTile;
         _instance = this;
@@ -30,8 +31,9 @@ public class Display
         Update();
     }
 
-    public static Display GetInstance(Map map, Player player, string instructions = "")
+    public static Display GetInstance(Map map = null!, Player player = null!, string instructions = "")
     {
+        if(_instance == null && (map == null || player == null)) throw new Exception("Tried to instantiate a display without a map or a player.");
         return _instance ?? new Display(map, player, instructions);
     }
 
@@ -61,7 +63,7 @@ public class Display
             Console.SetCursorPosition(MapBuilder.MapSizeX + Offset, Console.CursorTop);
             Console.WriteLine(line);
         }
-        SetCursor(0, 21);
+        SetCursor(0, _defaultCursorPos.Y - 1);
         Console.WriteLine("Log:");
         Console.WriteLine(_player.LastAction);
         SetCursor(100, 0);
@@ -75,13 +77,13 @@ public class Display
 
     private void UpdateInstructions()
     {
-        SetCursor(0, 24);
+        SetCursor(0, 21);
         Console.Write(_instructions);
     }
 
-    public static void Log(string message)
+    public void Log(string message)
     {
-        SetCursor(0, 22);
+        ResetCursor();
         Console.WriteLine(message);
         ResetCursor();
     }
@@ -115,10 +117,12 @@ public class Display
         {
             yield return "------------------------------------------";
             yield return "Contents of the tile:";
+            int num = 0;
             foreach (var item in _player.Position)
             {
                 if (item.Name == "Player") continue;
-                yield return item.Name;
+                yield return $"{Numbers[num]}. {item.Name}";
+                num++;
             }
         }
         if (_player.NearbyEnemy != null)
@@ -130,11 +134,11 @@ public class Display
 
     private IEnumerable<string> DisplayInventory()
     {
-        yield return $"Inventory: (Selected item: {_player.Inventory.CurrentItem?.Value.Name ?? "Nothing"})";
-        int num = 1;
+        yield return "Inventory:";
+        int num = 0;
         foreach (var item in _player.Inventory.Get)
         {
-            yield return $"{num}. {item.Name}";
+            yield return $"{Numbers[num]}. {item.Name}";
             if(item.Info != "")
                 yield return "  " + item.Info;
             num++;
@@ -154,4 +158,17 @@ public class Display
         }
     }
     
+    public ConsoleKeyInfo Prompt(string text)
+    {
+        SetCursor(0, _defaultCursorPos.Y - 1);
+        Console.WriteLine($"{text}:");
+        Console.WriteLine("                                  ");
+        ResetCursor();
+        Console.CursorVisible = true;
+        while (!Console.KeyAvailable) ;
+        var key = Console.ReadKey(true);
+        Console.CursorVisible = false;
+        _instance!.Update();
+        return key;
+    }
 }

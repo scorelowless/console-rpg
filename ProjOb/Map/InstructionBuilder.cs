@@ -19,7 +19,6 @@ public class InstructionBuilder : IMapBuilder
         _text.Clear();
         _text.Append("""
                      W, A, S, D - move
-                     <, > - change selected item
                      Esc - exit
                      
                      """);

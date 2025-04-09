@@ -1,12 +1,9 @@
-using ProjOb;
-
 namespace ProjOb;
 
 public class Player : Entity
 {
     // TODO: split OnUpdate into array of events and update every element individually
     public event Action? OnUpdate;
-    private readonly LinkedList<IItem> _inventory = [];
     public LastAction LastAction { get; private set; } = new(LastAction.ActionType.None);
     public Enemy? NearbyEnemy { get; private set; }
     public Inventory Inventory { get; } = new();
@@ -47,14 +44,14 @@ public class Player : Entity
         OnUpdate?.Invoke();
     }
 
-    public void PickUp()
+    public void PickUp(int ind)
     {
         if (Inventory.IsFull)
         {
-            ProjOb.Display.Log("Inventory full!");
+            ProjOb.Display.GetInstance().Log("Inventory full!");
             return;
         }
-        var temp = Position.Pick();
+        var temp = Position.Pick(ind);
         if (temp == null) return;
         temp.OnPickUp(this);
         Inventory.Add(temp);
@@ -63,9 +60,9 @@ public class Player : Entity
         OnUpdate?.Invoke();
     }
     
-    public void ThrowAway()
+    public void ThrowAway(int ind)
     {
-        IItem? item = Inventory.RemoveSelected();
+        IItem? item = Inventory.RemoveSelected(ind);
         if (item == null) return;
         Position.AddItem(item);
         item.OnThrow();
@@ -76,9 +73,9 @@ public class Player : Entity
 
     public void DropEverythingNow()
     {
-        while (_inventory.Count > 0)
+        while (Inventory.ItemCount > 0)
         {
-            IItem? item = Inventory.RemoveSelected();
+            IItem? item = Inventory.RemoveSelected(0);
             Position.AddItem(item!);
             item!.OnThrow();
         }
@@ -87,23 +84,24 @@ public class Player : Entity
         OnUpdate?.Invoke();
     }
 
-    public void Use()
+    public void Use(int ind)
     {
-        if (Inventory.CurrentItem == null) return;
-        IItem I = Inventory.CurrentItem.Value;
+        IItem? I = Inventory[ind];
+        if(I == null) return;
         var res = I.OnUse(); // try to use item
         if (!res.Item1) return; // if it cannot be used
-        LastAction = new LastAction(LastAction.ActionType.Use, I);
         if (res.Item2 == null) // if item after use is used (null)
         {
-            Inventory.RemoveSelected();
+            Inventory.RemoveSelected(ind);
+            LastAction = new LastAction(LastAction.ActionType.Use, I);
         }
         else
         {
             IHeldable? h = res.Item2.ToHeldable();
             if(h != null && Grab(h)) // if the item is IHeldable and can be grabbed
             {
-                Inventory.RemoveSelected();
+                Inventory.RemoveSelected(ind);
+                LastAction = new LastAction(LastAction.ActionType.Equip, I);
             }
         }
         NextTour();
@@ -114,7 +112,7 @@ public class Player : Entity
     {
         if (Inventory.IsFull)
         {
-            ProjOb.Display.Log("Inventory full!");
+            ProjOb.Display.GetInstance().Log("Inventory full!");
             return;
         }
         var t = Ungrab();
@@ -123,18 +121,6 @@ public class Player : Entity
         Inventory.Add(t);
         LastAction = new LastAction(LastAction.ActionType.Unequip, t);
         NextTour();
-        OnUpdate?.Invoke();
-    }
-
-    public void SelectedItemIncrement()
-    {
-        Inventory.SelectedItemIncrement();
-        OnUpdate?.Invoke();
-    }
-    
-    public void SelectedItemDecrement()
-    {
-        Inventory.SelectedItemDecrement();
         OnUpdate?.Invoke();
     }
 }
