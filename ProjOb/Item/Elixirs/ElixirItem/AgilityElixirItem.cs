@@ -1,6 +1,6 @@
 namespace ProjOb;
 
-public class AgilityElixirItem : Item, IElixirItem
+public class AgilityElixirItem : ElixirItem
 {
     public AgilityElixirItem() : base("Agility elixir", 'E')
     {

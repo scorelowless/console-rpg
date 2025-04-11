@@ -2,21 +2,20 @@ namespace ProjOb;
 
 public class Player : Entity
 {
-    // TODO: split OnUpdate into array of events and update every element individually
     public event Action? OnUpdate;
+
     public LastAction LastAction { get; private set; } = new(LastAction.ActionType.None);
     public Enemy? NearbyEnemy { get; private set; }
     public Inventory Inventory { get; } = new();
-    public Dictionary<string, Currency> Currencies { get; }
-
-    public Player(Map map) : base("Player", '¶', map[0,0])
+    public Dictionary<string, Currency> Currencies { get; } = new()
     {
-        Currencies = new Dictionary<string, Currency>
-        {
-            { "Money", new Money(0) },
-            { "Gold", new Gold(0) }
-        };
-        map[0, 0].AddPlayer();
+        { "Money", new Money(0) },
+        { "Gold", new Gold(0) }
+    };
+
+    public Player(Map map) : base("Player", '¶', map[0,0], ConsoleColor.Blue)
+    {
+        map[0, 0].AddPlayer(this);
     }
 
     public void Move(Direction direction)
@@ -26,7 +25,7 @@ public class Player : Entity
         if (nextPosition.ContainsEnemies() != null) return;
         Position.RemovePlayer();
         Position = nextPosition;
-        Position.AddPlayer();
+        Position.AddPlayer(this);
         NearbyEnemy = Position.Map.NextTile(Position, Direction.Up).ContainsEnemies() ??
                       Position.Map.NextTile(Position, Direction.Right).ContainsEnemies() ??
                       Position.Map.NextTile(Position, Direction.Down).ContainsEnemies() ??

@@ -2,7 +2,7 @@ using ProjOb;
 
 namespace ProjOb;
 
-public class Milk : Item
+public class Milk : ElixirItem
 {
     public Milk() : base("Milk", 'M')
     {

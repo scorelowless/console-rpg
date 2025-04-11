@@ -1,6 +1,6 @@
 namespace ProjOb;
 
-public class HealthElixirItem : Item, IElixirItem
+public class HealthElixirItem : ElixirItem
 {
     private const int Value = 5;
     public HealthElixirItem() : base("Health elixir", 'E')

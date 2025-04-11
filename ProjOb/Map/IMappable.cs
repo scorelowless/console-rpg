@@ -2,6 +2,6 @@ namespace ProjOb;
 
 public interface IMappable
 {
-    char Display { get; }
+    ColoredChar Display { get; }
     string Name { get; }
 }

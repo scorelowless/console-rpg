@@ -2,7 +2,7 @@ namespace ProjOb;
 
 public abstract class Item : IItem
 {
-    public char Display { get; }
+    public ColoredChar Display { get; }
     public virtual string Name { get; }
     public virtual string Info => "";
     public IItem ToItem() => this;
@@ -27,9 +27,9 @@ public abstract class Item : IItem
         
     }
 
-    protected Item(string name, char display)
+    protected Item(string name, char display, ConsoleColor color = ConsoleColor.White)
     {
         Name = name;
-        Display = display;
+        Display = new ColoredChar(display, color);
     }
 }

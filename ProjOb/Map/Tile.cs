@@ -8,16 +8,16 @@ public class Tile : IEnumerable<IMappable>
     public readonly Map Map;
     private readonly List<IItem> _items = [];
     private readonly List<Enemy> _enemies = [];
-    private bool _hasPlayer;
+    private Player? _player;
     public Point Position { get; }
     public bool IsNotWall { get; set; }
-    public char Print()
+    public ColoredChar Print()
     {
-        if (_hasPlayer) return '¶';
+        if (_player != null) return _player.Display;
         if (_enemies.Count != 0) return _enemies[^1].Display;
         if(_items.Count != 0) return _items[0].Display;
-        if (!IsNotWall) return '\u2588';
-        return ' ';
+        if (!IsNotWall) return new ColoredChar('\u2588');
+        return new ColoredChar(' ');
     }
     public event Action? OnUpdate;
 
@@ -40,9 +40,9 @@ public class Tile : IEnumerable<IMappable>
         OnUpdate?.Invoke();
     }
 
-    public void AddPlayer()
+    public void AddPlayer(Player player)
     {
-        _hasPlayer = true;
+        _player = player;
         OnUpdate?.Invoke();
     }
 
@@ -68,7 +68,7 @@ public class Tile : IEnumerable<IMappable>
 
     public void RemovePlayer()
     {
-        _hasPlayer = false;
+        _player = null;
         OnUpdate?.Invoke();
     }
     

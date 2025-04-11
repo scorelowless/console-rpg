@@ -8,7 +8,7 @@ public abstract class Weapon : Item, IWeapon
     public override string Info => $"Damage: {Damage}";
     public override IHeldable ToHeldable() => this;
 
-    protected Weapon(string name, char display) : base(name, display)
+    protected Weapon(string name, char display) : base(name, display, ConsoleColor.Green)
     {
         
     }

@@ -1,6 +1,6 @@
 namespace ProjOb;
 
-public class PowerElixirItem : Item,  IElixirItem
+public class PowerElixirItem : ElixirItem
 {
     public PowerElixirItem() : base("Power elixir", 'E')
     {

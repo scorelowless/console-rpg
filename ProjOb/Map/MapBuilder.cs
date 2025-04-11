@@ -163,8 +163,7 @@ public class MapBuilder : IMapBuilder
            {
                < 0.3 => new Bottle(),
                < 0.7 => new Wood(),
-               < 0.9 => new Stone(),
-               _ => new Milk()
+               _ => new Stone()
            };
            tile.AddItem(item);
         }
@@ -221,11 +220,12 @@ public class MapBuilder : IMapBuilder
         CheckNull();
         foreach (Tile tile in GetTiles(n))
         {
-            IElixirItem elixirItem = _r.NextDouble() switch
+            ElixirItem elixirItem = _r.NextDouble() switch
             {
                 < 0.3 => new PowerElixirItem(),
                 < 0.6 => new AgilityElixirItem(),
-                _ => new HealthElixirItem(),
+                < 0.9 => new HealthElixirItem(),
+                _ => new Milk()
             };
             tile.AddItem(elixirItem);
         }

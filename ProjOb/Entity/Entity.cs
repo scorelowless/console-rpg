@@ -10,7 +10,7 @@ public abstract class Entity : IMappable
     public Tile Position { get; protected set; }
     private readonly IHeldable?[] _heldItems;
 
-    public char Display { get; }
+    public ColoredChar Display { get; }
     public Dictionary<StatsType, int> Stats { get; }
 
     public ImmutableArray<IHeldable?> HeldItems => [.._heldItems];
@@ -21,10 +21,10 @@ public abstract class Entity : IMappable
     public ImmutableList<IEffect> Effects => _effects.ToImmutableList();
     private readonly List<ITourWatch?> _tourSubscribers = [];
 
-    protected Entity(string name, char display, Tile position)
+    protected Entity(string name, char display, Tile position, ConsoleColor color)
     {
         Name = name;
-        Display = display;
+        Display = new ColoredChar(display, color);
         Position = position;
         IsHandTaken = [false, false];
         _heldItems = [null, null];

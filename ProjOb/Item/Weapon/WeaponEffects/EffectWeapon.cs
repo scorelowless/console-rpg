@@ -35,7 +35,7 @@ public abstract class EffectWeapon : IWeapon
     public int HandsTaken => Weapon.HandsTaken;
     public virtual int Damage => Weapon.Damage;
 
-    public char Display => Weapon.Display;
+    public ColoredChar Display { get; }
     public string Name => Weapon.Name + _effectName;
 
     public IHeldable ToHeldable() => this;
@@ -45,6 +45,7 @@ public abstract class EffectWeapon : IWeapon
     {
         Weapon = weapon;
         _effectName = effectName;
+        Display = new ColoredChar(Weapon.Display.Character, ConsoleColor.Cyan);
     }
 
     public virtual IWeapon RemoveEffect()
