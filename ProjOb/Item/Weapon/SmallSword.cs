@@ -6,5 +6,6 @@ public class SmallSword : Weapon
     {
         Damage = 7;
         HandsTaken = 1;
+        Type = WeaponType.Light;
     }
 }

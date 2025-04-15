@@ -6,5 +6,6 @@ public class Dagger : Weapon
     {
         Damage = 5;
         HandsTaken = 1;
+        Type = WeaponType.Light;
     }
 }

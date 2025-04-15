@@ -34,6 +34,7 @@ public abstract class EffectWeapon : IWeapon
     }
     public int HandsTaken => Weapon.HandsTaken;
     public virtual int Damage => Weapon.Damage;
+    public Weapon.WeaponType Type => Weapon.Type;
 
     public ColoredChar Display { get; }
     public string Name => Weapon.Name + _effectName;

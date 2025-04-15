@@ -6,5 +6,6 @@ public class Longsword : Weapon
     {
         HandsTaken = 2;
         Damage = 15;
+        Type = WeaponType.Heavy;
     }
 }
