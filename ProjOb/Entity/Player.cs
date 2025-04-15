@@ -16,6 +16,17 @@ public class Player : Entity
     public Player(Map map) : base("Player", '¶', map[0,0], ConsoleColor.Blue)
     {
         map[0, 0].AddPlayer(this);
+        Stats = new Dictionary<StatsType, int>
+        {
+            { StatsType.Power, 10 },
+            { StatsType.Agility, 10 },
+            { StatsType.Luck, 10 },
+            { StatsType.Aggression, 10 },
+            { StatsType.Wisdom, 10 },
+            { StatsType.Health, 30 },
+            { StatsType.Attack, 0 },
+            { StatsType.Armor, 5 }
+        };
     }
 
     public void Move(Direction direction)

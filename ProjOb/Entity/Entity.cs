@@ -11,7 +11,7 @@ public abstract class Entity : IMappable
     private readonly IHeldable?[] _heldItems;
 
     public ColoredChar Display { get; }
-    public Dictionary<StatsType, int> Stats { get; }
+    public Dictionary<StatsType, int> Stats { get; protected init; }
 
     public ImmutableArray<IHeldable?> HeldItems => [.._heldItems];
 
@@ -28,15 +28,7 @@ public abstract class Entity : IMappable
         Position = position;
         IsHandTaken = [false, false];
         _heldItems = [null, null];
-        Stats = new Dictionary<StatsType, int>
-        {
-            { StatsType.Power, 10 },
-            { StatsType.Agility, 10 },
-            { StatsType.Health, 10 },
-            { StatsType.Luck, 10 },
-            { StatsType.Aggression, 10 },
-            { StatsType.Wisdom, 10 }
-        };
+        Stats = [];
     }
 
     protected bool Grab(IHeldable heldable)
@@ -120,6 +112,8 @@ public abstract class Entity : IMappable
         Health,
         Luck,
         Aggression,
-        Wisdom
+        Wisdom,
+        Attack,
+        Armor
     }
 }
