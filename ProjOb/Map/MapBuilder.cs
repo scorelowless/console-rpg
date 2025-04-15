@@ -251,8 +251,9 @@ public class MapBuilder : IMapBuilder
         {
             Enemy enemy = _r.NextDouble() switch
             {
-                < 0.3 => new Goblin(tile),
-                < 0.7 => new Kobold(tile),
+                < 0.25 => new Goblin(tile),
+                < 0.5 => new Kobold(tile),
+                < 0.75 => new Mage(tile),
                 _ => new Ogre(tile)
             };
             tile.AddEnemy(enemy);
