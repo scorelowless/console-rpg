@@ -18,8 +18,8 @@ public class InstructionBuilder : IMapBuilder
     {
         _text.Clear();
         _text.Append("""
-                     W, A, S, D - move
-                     Esc - exit
+                     W, A, S, D: move
+                     Esc: exit
                      
                      """);
         _hasItems = false;

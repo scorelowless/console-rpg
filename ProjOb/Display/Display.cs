@@ -1,5 +1,4 @@
 using System.Drawing;
-using System.Text;
 
 namespace ProjOb;
 
@@ -114,7 +113,7 @@ public class Display
         Console.Clear();
     }
     
-    private void InitializeConsoleText() // TODO: update only map/stats/eq/... and not the whole screen
+    private void InitializeConsoleText()
     {
         SetCursor(0, 0);
         DisplayMap();
@@ -160,7 +159,7 @@ public class Display
         Write(message);
     }
 
-    public void DisplayLog()
+    private void DisplayLog()
     {
         Write("Log:");
         Write(_player.LastAction.ToString());

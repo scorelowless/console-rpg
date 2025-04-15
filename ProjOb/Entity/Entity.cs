@@ -1,12 +1,10 @@
 using System.Collections.Immutable;
-using ProjOb;
 
 namespace ProjOb;
 
 public abstract class Entity : IMappable
 {
     public string Name { get; }
-    public IItem? ToItem() => null;
     public Tile Position { get; protected set; }
     private readonly IHeldable?[] _heldItems;
 
