@@ -6,6 +6,7 @@ public class Mage : Enemy
     {
         SetStats(10,10,10,10,10,30, 5);
         Grab(new Staff());
+        HeldItems[0]?.OnPickUp(this);
     }
 
     public override void Attack(int _, Entity target)

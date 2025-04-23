@@ -3,22 +3,20 @@ namespace ProjOb;
 public class Game
 {
     private bool _isRunning = true;
-    private readonly Player _player;
     private readonly KeyControl _keyControl;
     private readonly Display _display;
     private static Game _currentGame = null!;
 
     public static Game CurrentGame => _currentGame ?? throw new Exception("CurrentGame invoked without invoking NewGame beforehand");
-
-    public static Player GetPlayer => CurrentGame._player;
+    
     private Game()
     {
         _currentGame = this;
         var map = MapBuilderDirector.GenerateBasicMap(new MapBuilder()) as Map ?? throw new Exception("MapBuilderDirector.GenerateBasicMap returned null");
         string instructions = MapBuilderDirector.GenerateBasicMap(new InstructionBuilder()) as string ?? throw new Exception("MapBuilderDirector.GenerateBasicMap returned null");
-        _player = new Player(map);
-        _keyControl = MapBuilderDirector.GenerateBasicMap(new KeyControlBuilder()) as  KeyControl ?? throw new Exception("MapBuilderDirector.GenerateBasicMap returned null");
-        _display = Display.GetInstance(map, _player, instructions);
+        var player = new Player(map);
+        _keyControl = MapBuilderDirector.GenerateBasicMap(new KeyControlBuilder(player)) as KeyControl ?? throw new Exception("MapBuilderDirector.GenerateBasicMap returned null");
+        _display = Display.GetInstance(map, player, instructions);
     }
 
     public static Game NewGame()

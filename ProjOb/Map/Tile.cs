@@ -72,20 +72,11 @@ public class Tile : IEnumerable<IMappable>
         OnUpdate?.Invoke();
     }
     
-    public Enemy? ContainsEnemies()
-    {
-        return _enemies.Count == 0 ? null : _enemies[0];
-    }
+    public Enemy? ContainsEnemies() => _enemies.Count == 0 ? null : _enemies[0];
 
     public bool ContainsItems => _items.Count != 0;
     
-    public IEnumerator<IMappable> GetEnumerator()
-    {
-        return _enemies.Count != 0 ? _enemies.GetEnumerator() : _items.GetEnumerator();
-    }
+    public IEnumerator<IMappable> GetEnumerator() => _items.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

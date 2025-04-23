@@ -17,7 +17,7 @@ public class Player : Entity
     {
         map[0, 0].AddPlayer(this);
         var r = new Random();
-        SetStats(r.Next(5, 15), r.Next(5, 15), r.Next(5, 15), r.Next(5, 15), r.Next(5, 15), 30, 0);
+        SetStats(r.Next(5, 15), r.Next(5, 15), r.Next(5, 15), r.Next(5, 15), r.Next(5, 15), 50, 0);
         UpdateNearbyEnemy();
     }
 

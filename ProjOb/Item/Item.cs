@@ -10,10 +10,7 @@ public abstract class Item : IItem
 
     public virtual Entity? Owner { get; protected set; }
 
-    public virtual void OnPickUp(Entity entity)
-    {
-        Owner = entity;
-    }
+    public virtual void OnPickUp(Entity entity) => Owner = entity;
 
     public virtual void OnThrow()
     {

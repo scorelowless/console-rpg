@@ -7,26 +7,6 @@ public abstract class EffectWeapon : IWeapon
 
     public string Info => $"Damage: {Damage}";
     public Entity? Owner => Weapon.Owner;
-    public virtual void OnPickUp(Entity entity)
-    {
-        Weapon.OnPickUp(entity);
-    }
-
-    public virtual void OnThrow()
-    {
-        Weapon.OnThrow();
-    }
-
-    public virtual (bool, IItem?) OnUse()
-    {
-        Weapon.OnUse();
-        return (true, this);
-    }
-
-    public virtual void OnUnequip()
-    {
-        Weapon.OnUnequip();
-    }
     public bool IsHeld
     {
         get => Weapon.IsHeld;
@@ -34,15 +14,20 @@ public abstract class EffectWeapon : IWeapon
     }
     public int HandsTaken => Weapon.HandsTaken;
     public virtual int Damage => Weapon.Damage;
-    public void Attack(IAttackVisitor v)
+    public virtual void OnPickUp(Entity entity) => Weapon.OnPickUp(entity);
+
+    public virtual void OnThrow() => Weapon.OnThrow();
+
+    public virtual (bool, IItem?) OnUse()
     {
-        Weapon.Attack(v); // TODO: this won't include the effects of the weapon i think
+        Weapon.OnUse();
+        return (true, this);
     }
 
-    public IWeapon ToWeapon()
-    {
-        return this;
-    }
+    public virtual void OnUnequip() => Weapon.OnUnequip();
+    public void Attack(IAttackVisitor v) => Weapon.Attack(v);
+
+    public IWeapon ToWeapon() => this;
 
     public ColoredChar Display { get; }
     public string Name => Weapon.Name + _effectName;
@@ -57,10 +42,5 @@ public abstract class EffectWeapon : IWeapon
         Display = new ColoredChar(Weapon.Display.Character, ConsoleColor.Cyan);
     }
 
-    public virtual IWeapon RemoveEffect()
-    {
-        return Weapon;
-    }
-    
-    // TODO: overwrite correctly onEquip and onUnequip, so they use updated damage info
+    public virtual IWeapon RemoveEffect() => Weapon;
 }

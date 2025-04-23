@@ -15,20 +15,11 @@ public abstract class Weapon : Item, IWeapon
     }
 
     public override void OnThrow() => Owner = null;
-    public override void OnUnequip()
-    {
-        IsHeld = false;
-    }
+    public override void OnUnequip() => IsHeld = false;
 
-    public override (bool, IItem?) OnUse()
-    {
-        return (IsHeld = true, this);
-    }
+    public override (bool, IItem?) OnUse() => (IsHeld = true, this);
 
     public abstract void Attack(IAttackVisitor v);
 
-    public IWeapon ToWeapon()
-    {
-        return this;
-    }
+    public IWeapon ToWeapon() => this;
 }
