@@ -23,7 +23,27 @@ public abstract class Entity : IMappable
         Display = new ColoredChar(display, color);
         Position = position;
         _heldItems = [null, null];
-        Stats = [];
+        Stats = new Dictionary<StatsType, int>
+        {
+            { StatsType.Power, 0 },
+            { StatsType.Agility, 0 },
+            { StatsType.Luck, 0 },
+            { StatsType.Aggression, 0 },
+            { StatsType.Wisdom, 0 },
+            { StatsType.Health, 0 },
+            { StatsType.Armor, 0}
+        };
+    }
+
+    protected void SetStats(int power, int agility, int luck, int aggression, int wisdom, int health, int armor)
+    {
+        Stats[StatsType.Power] = power;
+        Stats[StatsType.Agility] = agility;
+        Stats[StatsType.Luck] = luck;
+        Stats[StatsType.Aggression] = aggression;
+        Stats[StatsType.Wisdom] = wisdom;
+        Stats[StatsType.Health] = health;
+        Stats[StatsType.Armor] = armor;
     }
 
     protected bool Grab(IHeldable heldable)
@@ -92,6 +112,10 @@ public abstract class Entity : IMappable
         RemoveSubscriber(effect);
     }
 
+    public abstract void ReceiveDamage(int damage);
+
+    public abstract void Attack(int type, Entity target);
+
     public enum StatsType
     {
         Power,
@@ -100,7 +124,6 @@ public abstract class Entity : IMappable
         Luck,
         Aggression,
         Wisdom,
-        Attack,
         Armor
     }
 }

@@ -4,6 +4,12 @@ public class Kobold : Enemy
 {
     public Kobold(Tile position) : base("Kobold", 'k', position)
     {
-        Grab(new SmallSword());
+        SetStats(7,7,7,7,7,20, 7);
+        Grab(new Dagger());
+    }
+
+    public override void Attack(int _, Entity target)
+    {
+        HeldItems[0]?.ToWeapon()?.Attack(new HiddenAttack(this, target));
     }
 }

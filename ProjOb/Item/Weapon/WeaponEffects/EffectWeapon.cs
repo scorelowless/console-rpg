@@ -34,7 +34,15 @@ public abstract class EffectWeapon : IWeapon
     }
     public int HandsTaken => Weapon.HandsTaken;
     public virtual int Damage => Weapon.Damage;
-    public Weapon.WeaponType Type => Weapon.Type;
+    public void Attack(IAttackVisitor v)
+    {
+        Weapon.Attack(v); // TODO: this won't include the effects of the weapon i think
+    }
+
+    public IWeapon ToWeapon()
+    {
+        return this;
+    }
 
     public ColoredChar Display { get; }
     public string Name => Weapon.Name + _effectName;
@@ -53,4 +61,6 @@ public abstract class EffectWeapon : IWeapon
     {
         return Weapon;
     }
+    
+    // TODO: overwrite correctly onEquip and onUnequip, so they use updated damage info
 }
