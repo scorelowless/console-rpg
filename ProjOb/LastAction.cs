@@ -1,32 +1,40 @@
 using System.Collections.Immutable;
+using System.Security.AccessControl;
 
 namespace ProjOb;
 
 public class LastAction
 {
-    private readonly IItem? _involvedItem;
     private ActionType Action { get; }
+    private readonly string[] _parameters;
     private readonly Enemy? _encounteredEnemy;
-    private static readonly ImmutableDictionary<ActionType, bool> RequiresItem =
-        ImmutableDictionary.Create<ActionType, bool>()
-            .Add(ActionType.None, false)
-            .Add(ActionType.MoveUp, false)
-            .Add(ActionType.MoveRight, false)
-            .Add(ActionType.MoveDown, false)
-            .Add(ActionType.MoveLeft, false)
-            .Add(ActionType.PickUp, true)
-            .Add(ActionType.ThrowAway, true)
-            .Add(ActionType.Use, true)
-            .Add(ActionType.Equip, true)
-            .Add(ActionType.Unequip, true)
-            .Add(ActionType.DropEverything, false);
+    private static readonly ImmutableDictionary<ActionType, int> NumberOfParameters =
+        ImmutableDictionary.Create<ActionType, int>()
+            .Add(ActionType.None, 0)
+            .Add(ActionType.MoveUp, 0)
+            .Add(ActionType.MoveRight, 0)
+            .Add(ActionType.MoveDown, 0)
+            .Add(ActionType.MoveLeft, 0)
+            .Add(ActionType.PickUp, 1)
+            .Add(ActionType.ThrowAway, 1)
+            .Add(ActionType.Use, 1)
+            .Add(ActionType.Equip, 1)
+            .Add(ActionType.Unequip, 1)
+            .Add(ActionType.DropEverything, 0)
+            .Add(ActionType.Attack, 1)
+            .Add(ActionType.Defense, 1);
 
-    public LastAction(ActionType action, IItem? involvedItem = null, Enemy? encounteredEnemy = null)
+    public LastAction(ActionType action, Enemy? encounteredEnemy = null) : this(action, [], encounteredEnemy)
+    {
+        
+    }
+    public LastAction(ActionType action, string[] parameters, Enemy? encounteredEnemy = null)
     {
         Action = action;
-        _involvedItem = involvedItem;
+        _parameters = parameters;
+        if(NumberOfParameters[action] != parameters.Length)
+            throw new InvalidOperationException("Wrong number of parameters in constructor of LastAction");
         _encounteredEnemy = encounteredEnemy;
-        if(RequiresItem[action] && _involvedItem == null) throw new InvalidOperationException("Action requires item");
     }
     
     public override string ToString()
@@ -37,12 +45,14 @@ public class LastAction
             ActionType.MoveRight => "Player moved right",
             ActionType.MoveDown => "Player moved down",
             ActionType.MoveLeft => "Player moved left",
-            ActionType.PickUp => $"Picked up {_involvedItem!.Name}",
-            ActionType.ThrowAway => $"Player threw {_involvedItem!.Name} away",
-            ActionType.Use => $"Player used {_involvedItem!.Name}",
-            ActionType.Equip => $"Player equipped {_involvedItem!.Name}",
-            ActionType.Unequip => $"Player unequipped {_involvedItem!.Name}",
+            ActionType.PickUp => $"Picked up {_parameters[0]}",
+            ActionType.ThrowAway => $"Player threw {_parameters[0]} away",
+            ActionType.Use => $"Player used {_parameters[0]}",
+            ActionType.Equip => $"Player equipped {_parameters[0]}",
+            ActionType.Unequip => $"Player unequipped {_parameters[0]}",
             ActionType.DropEverything => "Player dropped entire inventory",
+            ActionType.Attack => $"Player attacked {_parameters[0]}",
+            ActionType.Defense => $"Player got attacked by {_parameters[0]}",
             _ => ""
         };
         if (_encounteredEnemy != null) ret += $" and encountered {_encounteredEnemy.Name}";
@@ -61,6 +71,8 @@ public class LastAction
         Use,
         Equip,
         Unequip,
-        DropEverything
+        DropEverything,
+        Attack,
+        Defense
     }
 }

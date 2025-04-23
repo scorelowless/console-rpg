@@ -19,7 +19,7 @@ public class InstructionBuilder : IMapBuilder
         _text.Clear();
         _text.Append("""
                      W, A, S, D: move
-                     Esc: exit
+                     Esc: surrender
                      
                      """);
         _hasItems = false;
@@ -90,7 +90,7 @@ public class InstructionBuilder : IMapBuilder
     public void AddEnemies(int n = 1)
     {
         if(_hasEnemies || n == 0) return;
-        _text.Append("X: attack nearby enemy(not implemented)\n");
+        _text.Append("X: attack nearby enemy\n");
         _hasEnemies = true;
     }
 

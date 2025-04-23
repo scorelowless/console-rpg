@@ -8,7 +8,7 @@ public class KeyControlBuilder : IMapBuilder
     private bool _hasEnemies;
     private IKeyControl _keyControl = null!;
 
-    public KeyControlBuilder()
+    public KeyControlBuilder() // TODO: add player to constructor
     {
         Reset();
     }
@@ -89,7 +89,13 @@ public class KeyControlBuilder : IMapBuilder
     public void AddEnemies(int n = 1)
     {
         if(_hasEnemies || n == 0) return;
-        _keyControl = new KeyControl(_keyControl, ConsoleKey.X, () => { });
+        string prompt = """
+                        What kind of attack you want to do?
+                        1. Normal attack
+                        2. Hidden attack
+                        3. Magic attack
+                        """;
+        _keyControl = new NumberKeyControl(_keyControl, ConsoleKey.X, Game.GetPlayer.Attack, prompt);
         _hasEnemies = true;
     }
 

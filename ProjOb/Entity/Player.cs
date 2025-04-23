@@ -16,19 +16,19 @@ public class Player : Entity
     public Player(Map map) : base("Player", '¶', map[0,0], ConsoleColor.Blue)
     {
         map[0, 0].AddPlayer(this);
-        Stats = new Dictionary<StatsType, int>
-        {
-            { StatsType.Power, 10 },
-            { StatsType.Agility, 10 },
-            { StatsType.Luck, 10 },
-            { StatsType.Aggression, 10 },
-            { StatsType.Wisdom, 10 },
-            { StatsType.Health, 30 },
-            { StatsType.Attack, 0 },
-            { StatsType.Armor, 5 }
-        };
+        var r = new Random();
+        SetStats(r.Next(5, 15), r.Next(5, 15), r.Next(5, 15), r.Next(5, 15), r.Next(5, 15), 30, 0);
+        UpdateNearbyEnemy();
     }
 
+    private void UpdateNearbyEnemy()
+    {
+        NearbyEnemy = Position.Map.NextTile(Position, Direction.Up).ContainsEnemies() ??
+                      Position.Map.NextTile(Position, Direction.Right).ContainsEnemies() ??
+                      Position.Map.NextTile(Position, Direction.Down).ContainsEnemies() ??
+                      Position.Map.NextTile(Position, Direction.Left).ContainsEnemies() ??
+                      null;
+    }
     public void Move(Direction direction)
     {
         Tile nextPosition = Position.Map.NextTile(Position, direction);
@@ -37,11 +37,7 @@ public class Player : Entity
         Position.RemovePlayer();
         Position = nextPosition;
         Position.AddPlayer(this);
-        NearbyEnemy = Position.Map.NextTile(Position, Direction.Up).ContainsEnemies() ??
-                      Position.Map.NextTile(Position, Direction.Right).ContainsEnemies() ??
-                      Position.Map.NextTile(Position, Direction.Down).ContainsEnemies() ??
-                      Position.Map.NextTile(Position, Direction.Left).ContainsEnemies() ??
-                      null;
+        UpdateNearbyEnemy();
         LastAction = direction switch
         {
             Direction.Up => new LastAction(LastAction.ActionType.MoveUp, encounteredEnemy: NearbyEnemy),
@@ -65,7 +61,7 @@ public class Player : Entity
         if (temp == null) return;
         temp.OnPickUp(this);
         Inventory.Add(temp);
-        LastAction = new LastAction(LastAction.ActionType.PickUp, temp);
+        LastAction = new LastAction(LastAction.ActionType.PickUp, [temp.Name]);
         NextTour();
         OnUpdate?.Invoke();
     }
@@ -76,7 +72,7 @@ public class Player : Entity
         if (item == null) return;
         Position.AddItem(item);
         item.OnThrow();
-        LastAction = new LastAction(LastAction.ActionType.ThrowAway, item);
+        LastAction = new LastAction(LastAction.ActionType.ThrowAway, [item.Name]);
         NextTour();
         OnUpdate?.Invoke();
     }
@@ -103,7 +99,7 @@ public class Player : Entity
         if (res.Item2 == null) // if item after use is used (null)
         {
             Inventory.RemoveSelected(ind);
-            LastAction = new LastAction(LastAction.ActionType.Use, I);
+            LastAction = new LastAction(LastAction.ActionType.Use, [I.Name]);
         }
         else
         {
@@ -111,7 +107,7 @@ public class Player : Entity
             if(h != null && Grab(h)) // if the item is IHeldable and can be grabbed
             {
                 Inventory.RemoveSelected(ind);
-                LastAction = new LastAction(LastAction.ActionType.Equip, I);
+                LastAction = new LastAction(LastAction.ActionType.Equip, [I.Name]);
             }
         }
         NextTour();
@@ -129,8 +125,59 @@ public class Player : Entity
         if (t == null) return;
         t.OnUnequip();
         Inventory.Add(t);
-        LastAction = new LastAction(LastAction.ActionType.Unequip, t);
+        LastAction = new LastAction(LastAction.ActionType.Unequip, [t.Name]);
         NextTour();
         OnUpdate?.Invoke();
+    }
+
+    public void Attack(int type)
+    {
+        if (NearbyEnemy == null) return;
+        Attack(type, NearbyEnemy);
+    }
+    public override void Attack(int type, Entity _)
+    {
+        if (NearbyEnemy == null) return;
+        Enemy target = NearbyEnemy;
+        if (type < 0 || type > 2) return;
+        var weapons = HeldItems.ToList();
+        weapons.RemoveAll(w => w == null);
+        if(weapons.Count == 2 && weapons[0] == weapons[1]) weapons.RemoveAt(1);
+        var weap = weapons.Select(heldable => heldable?.ToWeapon()).ToList();
+        weap.RemoveAll(w => w == null);
+
+        IAttackVisitor visitor = type switch
+        {
+            0 => new NormalAttack(this, target),
+            1 => new HiddenAttack(this, target),
+            2 => new MagicAttack(this, target),
+            _ => throw new Exception("Unexpected behavior in Player.Attack")
+        };
+        
+        foreach (IWeapon? weapon in weap)
+        {
+            weapon?.Attack(visitor);
+        }
+        Stats[StatsType.Armor] = visitor.Armor;
+        
+        LastAction = new LastAction(LastAction.ActionType.Attack, [target.Name]);
+        NextTour();
+        UpdateNearbyEnemy();
+        OnUpdate?.Invoke();
+        if (NearbyEnemy != target) return;
+        Thread.Sleep(500);
+        target.Attack(this);
+        if (Stats[StatsType.Health] <= 0) return;
+        LastAction = new LastAction(LastAction.ActionType.Defense, [target.Name]);
+        OnUpdate?.Invoke();
+    }
+
+    public override void ReceiveDamage(int damage)
+    {
+        Stats[StatsType.Health] -= int.Max(damage - Stats[StatsType.Armor], 0);
+        if (Stats[StatsType.Health] <= 0)
+        {
+            Game.CurrentGame.Stop();
+        }
     }
 }

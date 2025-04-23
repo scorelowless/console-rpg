@@ -175,9 +175,10 @@ public class MapBuilder : IMapBuilder
         {
             Weapon weapon = _r.NextDouble() switch
             {
-                < 0.3 => new Dagger(),
-                < 0.7 => new SmallSword(),
-                _ => new Longsword()
+                < 0.25 => new Dagger(),
+                < 0.5 => new SmallSword(),
+                < 0.75 => new Longsword(),
+                _ => new Staff()
             };
             tile.AddItem(weapon);
         }
@@ -190,9 +191,10 @@ public class MapBuilder : IMapBuilder
         {
             IWeapon weapon = _r.NextDouble() switch
             {
-                < 0.3 => new Dagger(),
-                < 0.7 => new SmallSword(),
-                _ => new Longsword()
+                < 0.25 => new Dagger(),
+                < 0.5 => new SmallSword(),
+                < 0.75 => new Longsword(),
+                _ => new Staff()
             };
             weapon = _r.NextDouble() switch
             {
@@ -256,7 +258,6 @@ public class MapBuilder : IMapBuilder
                 < 0.75 => new Mage(tile),
                 _ => new Ogre(tile)
             };
-            tile.AddEnemy(enemy);
         }
     }
 
