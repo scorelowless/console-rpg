@@ -1,11 +1,9 @@
 namespace ProjOb;
 
-public class Dagger : Weapon
+public class Dagger : LightWeapon
 {
     public Dagger() : base("Dagger", 'd')
     {
-        Damage = 5;
         HandsTaken = 1;
-        Type = WeaponType.Light;
     }
 }
