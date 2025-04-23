@@ -34,10 +34,10 @@ public class Display
         InitializeConsoleText();
     }
 
-    public static Display GetInstance(Map map = null!, Player player = null!, string instructions = "")
+    public static Display GetInstance(Map? map = null, Player? player = null, string instructions = "")
     {
         if(_instance == null && (map == null || player == null)) throw new Exception("Tried to instantiate a display without a map or a player.");
-        return _instance ?? new Display(map, player, instructions);
+        return _instance ?? new Display(map!, player!, instructions);
     }
 
     private void InitializeSubscriptions()
@@ -157,6 +157,7 @@ public class Display
     {
         SetCursor(0, _defaultCursorPos.Y);
         Write(message);
+        Print();
     }
 
     private void DisplayLog()
@@ -206,6 +207,9 @@ public class Display
         {
             Write("------------------------------------------");
             Write($"Nearby Enemy: {_player.NearbyEnemy.Name}");
+            Write($"  Health: {_player.NearbyEnemy.Stats[Entity.StatsType.Health]}");
+            Write($"  Damage: {_player.NearbyEnemy.HeldItems[0]?.ToWeapon()?.Damage ?? 0}");
+            Write($"  Armor: {_player.NearbyEnemy.Stats[Entity.StatsType.Armor]}");
         }
     }
 
@@ -236,19 +240,48 @@ public class Display
     
     public ConsoleKeyInfo Prompt(string text)
     {
+        int lines = text.Count(c => c == '\n') + 1;
         SetCursor(0, _defaultCursorPos.Y - 1);
         ClearArea(100, 2);
-        Write($"{text}:");
+        Write(text);
         Print();
-        Console.SetCursorPosition(0, _defaultCursorPos.Y);
+        Console.SetCursorPosition(0, _defaultCursorPos.Y + lines - 1);
         Console.CursorVisible = true;
         while (!Console.KeyAvailable) ;
         var key = Console.ReadKey(true);
         Console.CursorVisible = false;
         SetCursor(0, _defaultCursorPos.Y - 1);
-        ClearArea(100, 2);
+        ClearArea(100, 1 + lines);
         DisplayLog();
         Print();
         return key;
+    }
+
+    public void GameOver()
+    {
+        SetCursor(0, 0);
+        ClearArea(Width, Height);
+        Write("""
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+                                              ▄██████▄     ▄████████   ▄▄▄▄███▄▄▄▄      ▄████████       ▄██████▄   ▄█    █▄     ▄████████    ▄████████ 
+                                             ███    ███   ███    ███ ▄██▀▀▀███▀▀▀██▄   ███    ███      ███    ███ ███    ███   ███    ███   ███    ███ 
+                                             ███    █▀    ███    ███ ███   ███   ███   ███    █▀       ███    ███ ███    ███   ███    █▀    ███    ███ 
+                                            ▄███          ███    ███ ███   ███   ███  ▄███▄▄▄          ███    ███ ███    ███  ▄███▄▄▄      ▄███▄▄▄▄██▀ 
+                                           ▀▀███ ████▄  ▀███████████ ███   ███   ███ ▀▀███▀▀▀          ███    ███ ███    ███ ▀▀███▀▀▀     ▀▀███▀▀▀▀▀   
+                                             ███    ███   ███    ███ ███   ███   ███   ███    █▄       ███    ███ ███    ███   ███    █▄  ▀███████████ 
+                                             ███    ███   ███    ███ ███   ███   ███   ███    ███      ███    ███ ███    ███   ███    ███   ███    ███ 
+                                             ████████▀    ███    █▀   ▀█   ███   █▀    ██████████       ▀██████▀   ▀██████▀    ██████████   ███    ███ 
+                                                                                                                                            ███    ███ 
+              """);
+        Print();
     }
 }

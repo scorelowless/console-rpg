@@ -40,6 +40,6 @@ public class Game
     public void Stop()
     {
         _isRunning = false;
-        Display.Clear();
+        _display.GameOver();
     }
 }

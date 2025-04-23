@@ -4,4 +4,5 @@ public interface IHeldable : IItem
 {
     public int HandsTaken { get; }
     bool IsHeld { get; set; }
+    public IWeapon? ToWeapon();
 }
