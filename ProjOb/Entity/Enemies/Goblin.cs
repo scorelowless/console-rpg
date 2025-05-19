@@ -5,11 +5,17 @@ public class Goblin : Enemy
     public Goblin(Tile position) : base("Goblin", 'g', position)
     {
         SetStats(5,5,5,5,5,10, 5);
-        Grab(new SmallSword());
-        HeldItems[0]?.OnPickUp(this);
+        var smallsword = new SmallSword();
+        Inventory.Grab(smallsword);
+        smallsword.OnPickUp(this);
     }
-    public override void Attack(int _, Entity target)
+
+    protected override int Attack(int _, Entity target)
     {
-        HeldItems[0]?.ToWeapon()?.Attack(new NormalAttack(this, target));
+        foreach (IHeldable heldable in Inventory.HeldItemsList)
+        {
+            heldable.ToWeapon()?.Attack(new NormalAttack(this, target));
+        }
+        return ReturnCode.SUCCESS;
     }
 }

@@ -6,12 +6,11 @@ public abstract class Entity : IMappable
 {
     public string Name { get; }
     public Tile Position { get; protected set; }
-    private readonly IHeldable?[] _heldItems;
+    
+    public Inventory Inventory { get; } = new();
 
     public ColoredChar Display { get; }
-    public Dictionary<StatsType, int> Stats { get; protected init; }
-
-    public ImmutableArray<IHeldable?> HeldItems => [.._heldItems];
+    public Dictionary<StatsType, int> Stats { get; }
     
     private readonly List<IEffect> _effects = [];
     public ImmutableList<IEffect> Effects => _effects.ToImmutableList();
@@ -22,7 +21,6 @@ public abstract class Entity : IMappable
         Name = name;
         Display = new ColoredChar(display, color);
         Position = position;
-        _heldItems = [null, null];
         Stats = new Dictionary<StatsType, int>
         {
             { StatsType.Power, 0 },
@@ -44,41 +42,6 @@ public abstract class Entity : IMappable
         Stats[StatsType.Wisdom] = wisdom;
         Stats[StatsType.Health] = health;
         Stats[StatsType.Armor] = armor;
-    }
-
-    protected bool Grab(IHeldable heldable)
-    {
-        switch (L: _heldItems[0] != null, R: _heldItems[1] != null, Two: heldable.HandsTaken == 2)
-        {
-            case (true, true, _): // both hands taken
-            case (true, false, true): // right hand taken and heldable is two-handed
-            case (false, true, true): // left hand taken and heldable is two-handed
-                return false;
-            case(false, false, true): // two hands free and heldable is two-handed
-                _heldItems[0] = heldable;
-                _heldItems[1] = heldable;
-                return true;
-            case (false, _, false): // left hand free and heldable is one-handed
-                _heldItems[0] = heldable;
-                return true;
-            case(true, false, false): // right hand free and heldable is one-handed
-                _heldItems[1] = heldable;
-                return true;
-        }
-    }
-
-    protected IHeldable? Ungrab()
-    {
-        var ret = _heldItems[1] != null ? _heldItems[1] : _heldItems[0];
-        if (_heldItems[0] == ret)
-        {
-            _heldItems[0] = null;
-        }
-        if (_heldItems[1] == ret)
-        {
-            _heldItems[1] = null;
-        }
-        return ret;
     }
     protected void NextTour()
     {
@@ -114,7 +77,7 @@ public abstract class Entity : IMappable
 
     public abstract void ReceiveDamage(int damage);
 
-    public abstract void Attack(int type, Entity target);
+    protected abstract int Attack(int type, Entity target);
 
     public enum StatsType
     {

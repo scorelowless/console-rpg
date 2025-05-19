@@ -181,8 +181,8 @@ public class Display
         }
 
         Write("------------------------------------------");
-        Write($"Left hand: {_player.HeldItems[0]?.Name ?? "Nothing"}");
-        Write($"Right hand: {_player.HeldItems[1]?.Name ?? "Nothing"}");
+        Write($"Left hand: {_player.Inventory.HeldItemsHands[0]?.Name ?? "Nothing"}");
+        Write($"Right hand: {_player.Inventory.HeldItemsHands[1]?.Name ?? "Nothing"}");
         if (_player.Effects.Count != 0)
         {
             Write("------------------------------------------");
@@ -208,7 +208,7 @@ public class Display
             Write("------------------------------------------");
             Write($"Nearby Enemy: {_player.NearbyEnemy.Name}");
             Write($"  Health: {_player.NearbyEnemy.Stats[Entity.StatsType.Health]}");
-            Write($"  Damage: {_player.NearbyEnemy.HeldItems[0]?.ToWeapon()?.Damage ?? 0}");
+            Write($"  Damage: {_player.NearbyEnemy.Inventory.HeldItemsHands[0]?.ToWeapon()?.Damage ?? 0}");
             Write($"  Armor: {_player.NearbyEnemy.Stats[Entity.StatsType.Armor]}");
         }
     }
