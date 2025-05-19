@@ -10,12 +10,12 @@ public class Mage : Enemy
         staff.OnPickUp(this);
     }
 
-    protected override int Attack(int _, Entity target)
+    protected override IActionType Attack(int _, Entity target)
     {
         foreach (IHeldable heldable in Inventory.HeldItemsList)
         {
             heldable.ToWeapon()?.Attack(new MagicAttack(this, target));
         }
-        return ReturnCode.SUCCESS;
+        return new ActionType.Attack(this, target);
     }
 }

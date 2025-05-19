@@ -10,12 +10,12 @@ public class Ogre : Enemy
         longsword.OnPickUp(this);
     }
 
-    protected override int Attack(int _, Entity target)
+    protected override IActionType Attack(int _, Entity target)
     {
         foreach (IHeldable heldable in Inventory.HeldItemsList)
         {
             heldable.ToWeapon()?.Attack(new NormalAttack(this, target));
         }
-        return ReturnCode.SUCCESS;
+        return new ActionType.Attack(this, target);
     }
 }

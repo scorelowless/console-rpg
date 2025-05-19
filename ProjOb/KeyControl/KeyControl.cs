@@ -4,15 +4,15 @@ public class KeyControl : IKeyControl
 {
     private readonly IKeyControl _baseKeyControl;
     private readonly ConsoleKey _key;
-    private readonly Func<int> _action;
+    private readonly Func<IActionType> _action;
 
-    public int Check(ConsoleKeyInfo key)
+    public IActionType Check(ConsoleKeyInfo key, ref bool isAwaitingInput)
     {
-        if (key.Key == _key) return _action();
-        return _baseKeyControl.Check(key);
+        if (!isAwaitingInput && key.Key == _key) return _action();
+        return _baseKeyControl.Check(key, ref isAwaitingInput);
     }
 
-    public KeyControl(IKeyControl baseKeyControl, ConsoleKey key,  Func<int> action)
+    public KeyControl(IKeyControl baseKeyControl, ConsoleKey key,  Func<IActionType> action)
     {
         _baseKeyControl = baseKeyControl;
         _key = key;

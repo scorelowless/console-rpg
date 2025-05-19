@@ -68,6 +68,8 @@ public class Tile : IEnumerable<IMappable>
 
     public bool ContainsItems => _items.Count != 0;
     
+    public bool ContainsPlayer() => _player != null;
+    
     public IEnumerator<IMappable> GetEnumerator() => _items.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

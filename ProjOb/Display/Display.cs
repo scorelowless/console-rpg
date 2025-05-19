@@ -33,7 +33,7 @@ public class Display
         InitializeConsoleText();
     }
 
-    public static Display GetInstance(Map? map = null, Player? player = null, string instructions = "") // TODO: check how it is used
+    public static Display GetInstance(Map? map = null, Player? player = null, string instructions = "")
     {
         if(_instance == null && (map == null || player == null)) throw new Exception("Tried to instantiate a display without a map or a player.");
         return _instance ?? new Display(map!, player!, instructions);
@@ -115,7 +115,7 @@ public class Display
         SetCursor(MapBuilder.MapSizeX + Offset, 0);
         DisplayPlayer();
         SetCursor(0, _defaultCursorPos.Y - 1);
-        DisplayLog();
+        Log("");
         SetCursor(100, 0);
         UpdateInventory();
         Print();
@@ -129,9 +129,6 @@ public class Display
 
     private void UpdateWholePlayer()
     {
-        SetCursor(0, _defaultCursorPos.Y - 1);
-        ClearArea(50, 2);
-        DisplayLog();
         SetCursor(MapBuilder.MapSizeX + Offset, 0);
         ClearArea(50, 40);
         DisplayPlayer();
@@ -141,15 +138,25 @@ public class Display
         Print();
     }
 
+    public void Update()
+    {
+        SetCursor(0,0);
+        DisplayMap();
+        UpdateWholePlayer();
+    }
+
     private void DisplayInstructions()
     {
         Write(_instructions);
     }
 
-    private void DisplayLog()
+    public void Log(string message)
     {
+        SetCursor(0, _defaultCursorPos.Y - 1);
+        ClearArea(50, 2);
         Write("Log:");
-        Write(_player.LastAction.ToString());
+        Write(message);
+        Print();
     }
     
     private void DisplayPlayer()
@@ -224,26 +231,31 @@ public class Display
         }
     }
     
-    public ConsoleKeyInfo Prompt(string text)
+    public void Prompt(string text)
     {
-        int lines = text.Count(c => c == '\n') + 1;
         SetCursor(0, _defaultCursorPos.Y - 1);
         ClearArea(100, 2);
         Write(text);
         Print();
-        Console.SetCursorPosition(0, _defaultCursorPos.Y + lines - 1);
-        Console.CursorVisible = true;
-        while (!Console.KeyAvailable) ;
-        var key = Console.ReadKey(true);
-        Console.CursorVisible = false;
-        SetCursor(0, _defaultCursorPos.Y - 1);
-        ClearArea(100, 1 + lines);
-        DisplayLog();
-        Print();
-        return key;
     }
 
-    public void GameOver() // TODO: should be invoked in a different way
+    public void ShowCursor(int linesOfPrompt)
+    {
+        Console.SetCursorPosition(0, _defaultCursorPos.Y + linesOfPrompt - 1);
+        Console.CursorVisible = true;
+    }
+
+    public void HideCursor()
+    {
+        Console.CursorVisible = false;
+    }
+
+    public ConsoleKeyInfo ReadKey()
+    {
+        return Console.ReadKey(true);
+    }
+
+    public void GameOver()
     {
         SetCursor(0, 0);
         ClearArea(Width, Height);
@@ -269,35 +281,5 @@ public class Display
                                                                                                                                             ███    ███ 
               """);
         Print();
-    }
-    private static readonly string[] Messages =
-    [
-        "",
-        "This key does nothing!",
-        "Inventory is full!",
-        "Invalid item number!",
-        "Invalid inventory slot!",
-        "Cannot move there!",
-        "Cannot use this item!",
-        "Nothing is being held!",
-        "No enemy to attack!",
-        "Invalid attack type!",
-        "You are dead!"
-    ];
-    public void ParseResult(int result)
-    {
-        if (result == ReturnCode.SUCCESS)
-        {
-            SetCursor(0,0);
-            DisplayMap();
-            UpdateWholePlayer();
-        }
-        else
-        {
-            SetCursor(0, _defaultCursorPos.Y);
-            ClearArea(50, 1);
-            Write(Messages[result]);
-            Print();
-        }
     }
 }

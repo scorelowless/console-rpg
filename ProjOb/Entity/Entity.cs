@@ -77,7 +77,7 @@ public abstract class Entity : IMappable
 
     public abstract void ReceiveDamage(int damage);
 
-    protected abstract int Attack(int type, Entity target);
+    protected abstract IActionType Attack(int type, Entity target);
 
     public enum StatsType
     {

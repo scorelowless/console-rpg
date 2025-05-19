@@ -2,8 +2,14 @@ namespace ProjOb;
 
 public class GuardKeyControl : IKeyControl
 {
-    public int Check(ConsoleKeyInfo key)
+    private readonly Player _player;
+    public IActionType Check(ConsoleKeyInfo key, ref bool isAwaitingInput)
     {
-        return ReturnCode.GUARD_KEY_CONTROL;
+        return new ActionType.GuardKeyControl(_player);
+    }
+
+    public GuardKeyControl(Player player)
+    {
+        _player = player;
     }
 }
