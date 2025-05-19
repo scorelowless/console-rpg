@@ -2,11 +2,8 @@ namespace ProjOb;
 
 public class Player : Entity
 {
-    public event Action? OnUpdate;
-
     public LastAction LastAction { get; private set; } = new(LastAction.ActionType.None);
     public Enemy? NearbyEnemy { get; private set; }
-    public Inventory Inventory { get; } = new();
     public Dictionary<string, Currency> Currencies { get; } = new()
     {
         { "Money", new Money(0) },
@@ -29,11 +26,11 @@ public class Player : Entity
                       Position.Map.NextTile(Position, Direction.Left).ContainsEnemies() ??
                       null;
     }
-    public void Move(Direction direction)
+    public int Move(Direction direction)
     {
         Tile nextPosition = Position.Map.NextTile(Position, direction);
-        if (nextPosition == Position) return;
-        if (nextPosition.ContainsEnemies() != null) return;
+        if (nextPosition == Position) return ReturnCode.CANT_MOVE;
+        if (nextPosition.ContainsEnemies() != null) return ReturnCode.CANT_MOVE;
         Position.RemovePlayer();
         Position = nextPosition;
         Position.AddPlayer(this);
@@ -47,37 +44,36 @@ public class Player : Entity
             _ => new LastAction(LastAction.ActionType.None),
         };
         NextTour();
-        OnUpdate?.Invoke();
+        return ReturnCode.SUCCESS;
     }
 
-    public void PickUp(int ind)
+    public int PickUp(int ind)
     {
         if (Inventory.IsFull)
         {
-            ProjOb.Display.GetInstance().Log("Inventory full!");
-            return;
+            return ReturnCode.INVENTORY_FULL;
         }
         var temp = Position.Pick(ind);
-        if (temp == null) return;
+        if (temp == null) return ReturnCode.TILE_EMPTY;
         temp.OnPickUp(this);
         Inventory.Add(temp);
         LastAction = new LastAction(LastAction.ActionType.PickUp, [temp.Name]);
         NextTour();
-        OnUpdate?.Invoke();
+        return ReturnCode.SUCCESS;
     }
     
-    public void ThrowAway(int ind)
+    public int ThrowAway(int ind)
     {
         IItem? item = Inventory.RemoveSelected(ind);
-        if (item == null) return;
+        if (item == null) return ReturnCode.INVALID_INVENTORY_SLOT;
         Position.AddItem(item);
         item.OnThrow();
         LastAction = new LastAction(LastAction.ActionType.ThrowAway, [item.Name]);
         NextTour();
-        OnUpdate?.Invoke();
+        return ReturnCode.SUCCESS;
     }
 
-    public void DropEverythingNow()
+    public int DropEverythingNow()
     {
         while (Inventory.ItemCount > 0)
         {
@@ -87,15 +83,15 @@ public class Player : Entity
         }
         LastAction = new LastAction(LastAction.ActionType.DropEverything);
         NextTour();
-        OnUpdate?.Invoke();
+        return ReturnCode.SUCCESS;
     }
 
-    public void Use(int ind)
+    public int Use(int ind)
     {
         IItem? I = Inventory[ind];
-        if(I == null) return;
+        if(I == null) return ReturnCode.INVALID_INVENTORY_SLOT;
         var res = I.OnUse(); // try to use item
-        if (!res.Item1) return; // if it cannot be used
+        if (!res.Item1) return ReturnCode.CANT_USE; // if it cannot be used
         if (res.Item2 == null) // if item after use is used (null)
         {
             Inventory.RemoveSelected(ind);
@@ -104,46 +100,42 @@ public class Player : Entity
         else
         {
             IHeldable? h = res.Item2.ToHeldable();
-            if(h != null && Grab(h)) // if the item is IHeldable and can be grabbed
+            if(h != null && Inventory.Grab(h)) // if the item is IHeldable and can be grabbed
             {
                 Inventory.RemoveSelected(ind);
                 LastAction = new LastAction(LastAction.ActionType.Equip, [I.Name]);
             }
         }
         NextTour();
-        OnUpdate?.Invoke();
+        return ReturnCode.SUCCESS;
     }
 
-    public void Unequip()
+    public int Unequip()
     {
         if (Inventory.IsFull)
         {
-            ProjOb.Display.GetInstance().Log("Inventory full!");
-            return;
+            return ReturnCode.INVENTORY_FULL;
         }
-        var t = Ungrab();
-        if (t == null) return;
+        var t = Inventory.Ungrab();
+        if (t == null) return ReturnCode.NOTHING_HELD;
         t.OnUnequip();
         Inventory.Add(t);
         LastAction = new LastAction(LastAction.ActionType.Unequip, [t.Name]);
         NextTour();
-        OnUpdate?.Invoke();
+        return ReturnCode.SUCCESS;
     }
 
-    public void Attack(int type)
+    public int Attack(int type)
     {
-        if (NearbyEnemy == null) return;
-        Attack(type, NearbyEnemy);
+        return Attack(type, NearbyEnemy);
     }
-    public override void Attack(int type, Entity _)
+
+    protected override int Attack(int type, Entity? _)
     {
-        if (NearbyEnemy == null) return;
+        if (NearbyEnemy == null) return ReturnCode.NO_ENEMY;
         Enemy target = NearbyEnemy;
-        if (type < 0 || type > 2) return;
-        var weapons = HeldItems.ToList();
-        weapons.RemoveAll(w => w == null);
-        if(weapons.Count == 2 && weapons[0] == weapons[1]) weapons.RemoveAt(1);
-        var weap = weapons.Select(heldable => heldable?.ToWeapon()).ToList();
+        if (type < 0 || type > 2) return ReturnCode.WRONG_ATTACK;
+        var weap = Inventory.HeldItemsList.Select(heldable => heldable.ToWeapon()).ToList();
         weap.RemoveAll(w => w == null);
 
         IAttackVisitor visitor = type switch
@@ -163,13 +155,11 @@ public class Player : Entity
         LastAction = new LastAction(LastAction.ActionType.Attack, [target.Name]);
         NextTour();
         UpdateNearbyEnemy();
-        OnUpdate?.Invoke();
-        if (NearbyEnemy != target) return;
-        Thread.Sleep(500);
+        if (NearbyEnemy != target) return ReturnCode.SUCCESS;
         target.Attack(this);
-        if (Stats[StatsType.Health] <= 0) return;
+        if (Stats[StatsType.Health] <= 0) return ReturnCode.DEATH;
         LastAction = new LastAction(LastAction.ActionType.Defense, [target.Name]);
-        OnUpdate?.Invoke();
+        return ReturnCode.SUCCESS;
     }
 
     public override void ReceiveDamage(int damage)

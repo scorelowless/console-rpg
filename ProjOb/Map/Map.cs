@@ -8,25 +8,12 @@ public class Map
     private readonly int _mapSizeY;
     private readonly Tile[,] _tiles;
     public Tile this[int x, int y] => _tiles[x, y];
-    public event Action<Point>? OnUpdate;
 
     public Map(Tile[,] tiles, int x, int y)
     {
         _tiles = tiles;
         _mapSizeX = x;
         _mapSizeY = y;
-    }
-
-    public void UpdateOnUpdates()
-    {
-        for (var y = 0; y < _mapSizeY; y++)
-        {
-            for (var x = 0; x < _mapSizeX; x++)
-            {
-                int xx = x, yy = y;
-                _tiles[x, y].OnUpdate += () => OnUpdate?.Invoke(new Point(xx, yy));
-            }
-        }
     }
     public Tile NextTile(Tile tile, Direction direction)
     {

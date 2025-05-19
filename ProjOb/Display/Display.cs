@@ -25,8 +25,7 @@ public class Display
         _map = map;
         _player = player;
         _instructions = instructions;
-        _defaultCursorPos = new(0, 20 + 1 + instructions.Count(c => c == '\n') + 1 + 1);
-        InitializeSubscriptions();
+        _defaultCursorPos = new Point(0, 20 + 1 + instructions.Count(c => c == '\n') + 1 + 1);
         _instance = this;
         Console.SetWindowSize(Width,  Height);
         Console.CursorVisible = false;
@@ -34,16 +33,10 @@ public class Display
         InitializeConsoleText();
     }
 
-    public static Display GetInstance(Map? map = null, Player? player = null, string instructions = "")
+    public static Display GetInstance(Map? map = null, Player? player = null, string instructions = "") // TODO: check how it is used
     {
         if(_instance == null && (map == null || player == null)) throw new Exception("Tried to instantiate a display without a map or a player.");
         return _instance ?? new Display(map!, player!, instructions);
-    }
-
-    private void InitializeSubscriptions()
-    {
-        _player.OnUpdate += UpdateWholePlayer;
-        _map.OnUpdate += UpdateTile;
     }
     
     private void SetCursor(int left, int top)
@@ -153,13 +146,6 @@ public class Display
         Write(_instructions);
     }
 
-    public void Log(string message)
-    {
-        SetCursor(0, _defaultCursorPos.Y);
-        Write(message);
-        Print();
-    }
-
     private void DisplayLog()
     {
         Write("Log:");
@@ -257,7 +243,7 @@ public class Display
         return key;
     }
 
-    public void GameOver()
+    public void GameOver() // TODO: should be invoked in a different way
     {
         SetCursor(0, 0);
         ClearArea(Width, Height);
@@ -283,5 +269,35 @@ public class Display
                                                                                                                                             ███    ███ 
               """);
         Print();
+    }
+    private static readonly string[] Messages =
+    [
+        "",
+        "This key does nothing!",
+        "Inventory is full!",
+        "Invalid item number!",
+        "Invalid inventory slot!",
+        "Cannot move there!",
+        "Cannot use this item!",
+        "Nothing is being held!",
+        "No enemy to attack!",
+        "Invalid attack type!",
+        "You are dead!"
+    ];
+    public void ParseResult(int result)
+    {
+        if (result == ReturnCode.SUCCESS)
+        {
+            SetCursor(0,0);
+            DisplayMap();
+            UpdateWholePlayer();
+        }
+        else
+        {
+            SetCursor(0, _defaultCursorPos.Y);
+            ClearArea(50, 1);
+            Write(Messages[result]);
+            Print();
+        }
     }
 }

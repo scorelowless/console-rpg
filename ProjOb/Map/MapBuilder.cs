@@ -251,7 +251,7 @@ public class MapBuilder : IMapBuilder
         CheckNull();
         foreach (Tile tile in GetTiles(n))
         {
-            Enemy enemy = _r.NextDouble() switch
+            Enemy _ = _r.NextDouble() switch
             {
                 < 0.25 => new Goblin(tile),
                 < 0.5 => new Kobold(tile),
@@ -263,7 +263,6 @@ public class MapBuilder : IMapBuilder
 
     public object? GetResult()
     {
-        _map?.UpdateOnUpdates();
         return _map;
     }
 }

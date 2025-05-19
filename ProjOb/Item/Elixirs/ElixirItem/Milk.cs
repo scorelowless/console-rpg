@@ -1,5 +1,3 @@
-using ProjOb;
-
 namespace ProjOb;
 
 public class Milk : ElixirItem

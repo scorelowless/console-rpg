@@ -31,13 +31,15 @@ public class Game
         while (_isRunning)
         {
             if (!Console.KeyAvailable) continue;
-            _keyControl.Check(Console.ReadKey(true));
+            int result = _keyControl.Check(Console.ReadKey(true));
+            _display.ParseResult(result);
         }
+        _display.GameOver();
     }
 
-    public void Stop()
+    public int Stop()
     {
         _isRunning = false;
-        _display.GameOver();
+        return ReturnCode.SUCCESS;
     }
 }

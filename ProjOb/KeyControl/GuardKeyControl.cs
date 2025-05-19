@@ -2,8 +2,8 @@ namespace ProjOb;
 
 public class GuardKeyControl : IKeyControl
 {
-    public void Check(ConsoleKeyInfo key)
+    public int Check(ConsoleKeyInfo key)
     {
-        Display.GetInstance().Log("This key does nothing!");
+        return ReturnCode.GUARD_KEY_CONTROL;
     }
 }
