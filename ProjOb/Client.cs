@@ -48,7 +48,7 @@ public class Client
                     }
                 }
             });
-            
+
             while (_isAlive)
             {
                 if (display.IsKeyAvailable())
@@ -69,6 +69,11 @@ public class Client
         {
             Display d = Display.GetInstance();
             d.WriteError("Server closed unexpectedly");
+        }
+        catch (SocketException)
+        {
+            Display d = Display.GetInstance();
+            d.WriteError("Server is probably down");
         }
         catch (Exception e)
         {

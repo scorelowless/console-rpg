@@ -10,9 +10,9 @@ public class Display
     private const int OFFSET = 5;
     private const string NUMBERS = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     
-    private readonly Map _map;
-    private readonly Player _player;
-    private readonly string _instructions;
+    private readonly Map _map = null!;
+    private readonly Player _player = null!;
+    private readonly string _instructions = null!;
     
     private readonly Point _defaultCursorPos;
     private int _cursorTop;
@@ -35,9 +35,13 @@ public class Display
         InitializeConsoleText();
     }
 
+    private Display()
+    {
+    }
+
     public static Display GetInstance(Map? map = null, Player? player = null, string instructions = "")
     {
-        //if(_instance == null && (map == null || player == null)) throw new Exception("Tried to instantiate a display without a map or a player.");
+        if (_instance == null && (map == null || player == null)) return new Display();
         return _instance ?? new Display(map!, player!, instructions);
     }
     
