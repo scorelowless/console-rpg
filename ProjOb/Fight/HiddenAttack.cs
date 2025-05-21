@@ -13,21 +13,24 @@ public class HiddenAttack : IAttackVisitor
         _target = target;
     }
 
-    public void AttackHeavy(IWeapon w)
+    public int AttackHeavy(IWeapon w)
     {
         _target.ReceiveDamage(w.Damage / 2);
         Armor = _attacker.Stats[Entity.StatsType.Power];
+        return w.Damage / 2;
     }
 
-    public void AttackLight(IWeapon w)
+    public int AttackLight(IWeapon w)
     {
         _target.ReceiveDamage(w.Damage * 2);
         Armor = _attacker.Stats[Entity.StatsType.Agility];
+        return w.Damage * 2;
     }
 
-    public void AttackMagic(IWeapon w)
+    public int AttackMagic(IWeapon w)
     {
         _target.ReceiveDamage(1);
+        return 1;
     }
 
 }

@@ -13,19 +13,22 @@ public class MagicAttack : IAttackVisitor
         _target = target;
         Armor = attacker.Stats[Entity.StatsType.Luck];
     }
-    public void AttackHeavy(IWeapon w)
+    public int AttackHeavy(IWeapon w)
     {
         _target.ReceiveDamage(1);
+        return 1;
     }
 
-    public void AttackLight(IWeapon w)
+    public int AttackLight(IWeapon w)
     {
         _target.ReceiveDamage(1);
+        return 1;
     }
 
-    public void AttackMagic(IWeapon w)
+    public int AttackMagic(IWeapon w)
     {
         _target.ReceiveDamage(w.Damage);
         Armor = 2 * _attacker.Stats[Entity.StatsType.Wisdom];
+        return w.Damage;
     }
 }

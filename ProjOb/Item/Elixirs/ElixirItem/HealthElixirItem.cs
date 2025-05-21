@@ -2,7 +2,7 @@ namespace ProjOb;
 
 public class HealthElixirItem : ElixirItem
 {
-    private const int Value = 5;
+    private const int VALUE = 5;
     public HealthElixirItem() : base("Health elixir", 'E')
     {
 
@@ -10,7 +10,7 @@ public class HealthElixirItem : ElixirItem
     
     public override (bool, IItem?) OnUse()
     {
-        Owner!.Stats[Entity.StatsType.Health] += Value;
+        Owner!.Stats[Entity.StatsType.Health] += VALUE;
         return (true, null);
     }
 }

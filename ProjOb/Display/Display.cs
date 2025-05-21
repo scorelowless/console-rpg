@@ -5,10 +5,10 @@ namespace ProjOb;
 public class Display
 {
     private static Display? _instance;
-    private const int Width = 150;
-    private const int Height = 40;
-    private const int Offset = 5;
-    private const string Numbers = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private const int WIDTH = 150;
+    private const int HEIGHT = 40;
+    private const int OFFSET = 5;
+    private const string NUMBERS = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     
     private readonly Map _map;
     private readonly Player _player;
@@ -17,8 +17,10 @@ public class Display
     private readonly Point _defaultCursorPos;
     private int _cursorTop;
     private int _cursorLeft;
-    private readonly ColoredChar[,] _content = new ColoredChar[Width, Height];
+    private readonly ColoredChar[,] _content = new ColoredChar[WIDTH, HEIGHT];
     private ConsoleColor _currentColor = ConsoleColor.White;
+    private readonly Mutex _consoleMutex = new Mutex();
+    private readonly Mutex _bufferMutex = new Mutex();
     
     private Display(Map map, Player player, string instructions)
     {
@@ -27,7 +29,7 @@ public class Display
         _instructions = instructions;
         _defaultCursorPos = new Point(0, 20 + 1 + instructions.Count(c => c == '\n') + 1 + 1);
         _instance = this;
-        Console.SetWindowSize(Width,  Height);
+        Console.SetWindowSize(WIDTH,  HEIGHT);
         Console.CursorVisible = false;
         Clear();
         InitializeConsoleText();
@@ -35,75 +37,100 @@ public class Display
 
     public static Display GetInstance(Map? map = null, Player? player = null, string instructions = "")
     {
-        if(_instance == null && (map == null || player == null)) throw new Exception("Tried to instantiate a display without a map or a player.");
+        //if(_instance == null && (map == null || player == null)) throw new Exception("Tried to instantiate a display without a map or a player.");
         return _instance ?? new Display(map!, player!, instructions);
     }
     
     private void SetCursor(int left, int top)
     {
-        _cursorLeft = left;
-        _cursorTop = top;
+        lock (_bufferMutex)
+        {
+            _cursorLeft = left;
+            _cursorTop = top;
+        }
     }
 
     private void PutChar(ColoredChar c)
     {
-        _content[_cursorLeft, _cursorTop] = c;
-        _cursorLeft++;
+        lock (_bufferMutex)
+        {
+            _content[_cursorLeft, _cursorTop] = c;
+            _cursorLeft++;
+        }
     }
     private void Write(string text) // writes as if the beginnings of the line were at the cursor column
     {
-        text += '\n';
-        int offset = _cursorLeft;
-        foreach (char c in text)
+        lock (_bufferMutex)
         {
-            if (_cursorLeft >= Width)
+            text += '\n';
+            int offset = _cursorLeft;
+            foreach (char c in text)
             {
-                _cursorLeft = offset;
-                _cursorTop++;
+                if (_cursorLeft >= WIDTH)
+                {
+                    _cursorLeft = offset;
+                    _cursorTop++;
+                }
+
+                if (_cursorTop >= HEIGHT) break;
+                if (c == '\n')
+                {
+                    _cursorLeft = offset;
+                    _cursorTop++;
+                    continue;
+                }
+
+                _content[_cursorLeft, _cursorTop] = new ColoredChar(c);
+                _cursorLeft++;
             }
-            if (_cursorTop >= Height) break;
-            if (c == '\n')
-            {
-                _cursorLeft = offset;
-                _cursorTop++;
-                continue;
-            }
-            _content[_cursorLeft, _cursorTop] = new ColoredChar(c);
-            _cursorLeft++;
         }
     }
 
     private void Print()
     {
-        Console.SetCursorPosition(0, 0);
-        for (int i = 0; i < Height; ++i)
+        lock (_consoleMutex)
         {
-            for (int j = 0; j < Width; ++j)
+            Console.SetCursorPosition(0, 0);
+            lock (_bufferMutex)
             {
-                if (_currentColor != _content[j, i].Color)
+                for (int i = 0; i < HEIGHT; ++i)
                 {
-                    Console.ForegroundColor = _currentColor = _content[j, i].Color;
+                    for (int j = 0; j < WIDTH; ++j)
+                    {
+                        if (_currentColor != _content[j, i].Color)
+                        {
+                            Console.ForegroundColor = _currentColor = _content[j, i].Color;
+                        }
+
+                        Console.Write(_content[j, i].Character == 0 ? ' ' : _content[j, i].Character);
+                    }
+
+                    Console.WriteLine();
                 }
-                Console.Write(_content[j, i].Character == 0 ? ' ' : _content[j, i].Character);
             }
-            Console.WriteLine();
         }
     }
 
     private void ClearArea(int width, int height)
     {
-        for (int i = _cursorLeft; i < _cursorLeft + width; i++)
+        lock (_bufferMutex)
         {
-            for (int j = _cursorTop; j < _cursorTop + height; j++)
+            for (int i = _cursorLeft; i < _cursorLeft + width; i++)
             {
-                _content[i, j] = new ColoredChar(' ');
+                for (int j = _cursorTop; j < _cursorTop + height; j++)
+                {
+                    _content[i, j] = new ColoredChar(' ');
+                }
             }
         }
     }
-    
-    public static void Clear()
+
+    public void Clear()
     {
-        Console.Clear();
+        lock (_consoleMutex)
+        {
+            Console.Clear();
+        }
     }
     
     private void InitializeConsoleText()
@@ -112,7 +139,7 @@ public class Display
         DisplayMap();
         SetCursor(0, 21);
         DisplayInstructions();
-        SetCursor(MapBuilder.MapSizeX + Offset, 0);
+        SetCursor(MapBuilder.MapSizeX + OFFSET, 0);
         DisplayPlayer();
         SetCursor(0, _defaultCursorPos.Y - 1);
         Log("");
@@ -121,15 +148,15 @@ public class Display
         Print();
     }
 
-    private void UpdateTile(Point p)
+    /*private void UpdateTile(Point p)
     {
         SetCursor(p.X, p.Y);
         PutChar(_map[p.X, p.Y].Print());
-    }
+    }*/
 
     private void UpdateWholePlayer()
     {
-        SetCursor(MapBuilder.MapSizeX + Offset, 0);
+        SetCursor(MapBuilder.MapSizeX + OFFSET, 0);
         ClearArea(50, 40);
         DisplayPlayer();
         SetCursor(100, 0);
@@ -153,7 +180,7 @@ public class Display
     public void Log(string message)
     {
         SetCursor(0, _defaultCursorPos.Y - 1);
-        ClearArea(50, 2);
+        ClearArea(100, 5);
         Write("Log:");
         Write(message);
         Print();
@@ -184,7 +211,7 @@ public class Display
                 Write($"{effect.Name}: {effect.ToursLeft} tours left");
             }
         }
-        if (_player.Position.ContainsItems)
+        if (_player.Position.ContainsItems())
         {
             Write("------------------------------------------");
             Write("Contents of the tile:");
@@ -192,7 +219,7 @@ public class Display
             foreach (var item in _player.Position)
             {
                 if (item.Name == "Player") continue;
-                Write($"{Numbers[num]}. {item.Name}");
+                Write($"{NUMBERS[num]}. {item.Name}");
                 num++;
             }
         }
@@ -212,7 +239,7 @@ public class Display
         int num = 0;
         foreach (var item in _player.Inventory.Get)
         {
-            Write($"{Numbers[num]}. {item.Name}");
+            Write($"{NUMBERS[num]}. {item.Name}");
             if(item.Info != "")
                 Write("  " + item.Info);
             num++;
@@ -234,31 +261,59 @@ public class Display
     public void Prompt(string text)
     {
         SetCursor(0, _defaultCursorPos.Y - 1);
-        ClearArea(100, 2);
+        ClearArea(100, 5);
         Write(text);
+        int lines = text.Count(c => c == '\n') + 1;
+        /*lock (_consoleMutex)
+        {
+            Console.CursorVisible = true;
+        }*/
         Print();
-    }
-
-    public void ShowCursor(int linesOfPrompt)
-    {
-        Console.SetCursorPosition(0, _defaultCursorPos.Y + linesOfPrompt - 1);
-        Console.CursorVisible = true;
+        lock (_consoleMutex)
+        {
+            Console.SetCursorPosition(0, _defaultCursorPos.Y + lines - 1);
+        }
     }
 
     public void HideCursor()
     {
-        Console.CursorVisible = false;
+        //Console.CursorVisible = false;
     }
 
     public ConsoleKeyInfo ReadKey()
     {
-        return Console.ReadKey(true);
+        ConsoleKeyInfo key;
+        lock (_consoleMutex)
+        {
+            key = Console.ReadKey(true);
+        }
+        return key;
+    }
+
+    public bool IsKeyAvailable()
+    {
+        bool ret;
+        lock (_consoleMutex)
+        {
+            ret = Console.KeyAvailable;
+        }
+        return ret;
+    }
+
+    public void WriteError(string text)
+    {
+        Clear();
+        lock (_consoleMutex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(text);
+        }
     }
 
     public void GameOver()
     {
         SetCursor(0, 0);
-        ClearArea(Width, Height);
+        ClearArea(WIDTH, HEIGHT);
         Write("""
               
               
@@ -281,5 +336,6 @@ public class Display
                                                                                                                                             ███    ███ 
               """);
         Print();
+        Console.SetCursorPosition(0, _defaultCursorPos.Y);
     }
 }

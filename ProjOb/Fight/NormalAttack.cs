@@ -13,21 +13,24 @@ public class NormalAttack : IAttackVisitor
         _target = target;
         Armor = attacker.Stats[Entity.StatsType.Agility];
     }
-    public void AttackHeavy(IWeapon w)
+    public int AttackHeavy(IWeapon w)
     {
         _target.ReceiveDamage(w.Damage);
         Armor = _attacker.Stats[Entity.StatsType.Power] + _attacker.Stats[Entity.StatsType.Luck];
+        return w.Damage;
     }
 
-    public void AttackLight(IWeapon w)
+    public int AttackLight(IWeapon w)
     {
         _target.ReceiveDamage(w.Damage);
         Armor = _attacker.Stats[Entity.StatsType.Agility] + _attacker.Stats[Entity.StatsType.Luck];
+        return w.Damage;
     }
 
-    public void AttackMagic(IWeapon w)
+    public int AttackMagic(IWeapon w)
     {
         _target.ReceiveDamage(1);
         Armor = _attacker.Stats[Entity.StatsType.Agility] + _attacker.Stats[Entity.StatsType.Luck];
+        return 1;
     }
 }

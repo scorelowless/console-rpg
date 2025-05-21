@@ -9,13 +9,18 @@ public class Mage : Enemy
         Inventory.Grab(staff);
         staff.OnPickUp(this);
     }
-
-    protected override IActionType Attack(int _, Entity target)
+    
+    public Mage()
     {
+    }
+
+    protected override IResultType Attack(int _, Entity target)
+    {
+        int damage = 0;
         foreach (IHeldable heldable in Inventory.HeldItemsList)
         {
-            heldable.ToWeapon()?.Attack(new MagicAttack(this, target));
+            damage += heldable.ToWeapon()?.Attack(new MagicAttack(this, target)) ?? 0;
         }
-        return new ActionType.Attack(this, target);
+        return new ResultType.Attack(this, target, damage);
     }
 }

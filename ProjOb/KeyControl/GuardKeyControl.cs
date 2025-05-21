@@ -2,14 +2,8 @@ namespace ProjOb;
 
 public class GuardKeyControl : IKeyControl
 {
-    private readonly Player _player;
-    public IActionType Check(ConsoleKeyInfo key, ref bool isAwaitingInput)
+    public IActionType Check(ConsoleKeyInfo key)
     {
-        return new ActionType.GuardKeyControl(_player);
-    }
-
-    public GuardKeyControl(Player player)
-    {
-        _player = player;
+        return new ActionType.Invalid();
     }
 }

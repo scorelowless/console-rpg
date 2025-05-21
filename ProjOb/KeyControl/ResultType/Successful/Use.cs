@@ -1,16 +1,13 @@
-namespace ProjOb.ActionType;
+namespace ProjOb.ResultType;
 
-public class Use : IActionType
+public class Use : IResultType
 {
     private readonly IItem _item;
-    public Use(Entity sender, IItem item)
+    public Use(IItem item)
     {
-        Sender = sender;
         _item = item;
     }
     public bool WasSuccessful => true;
-    public bool IsPrompt => false;
     public bool IsSenderDead => false;
     public string Message => $"Player used {_item.Name}";
-    public Entity Sender { get; }
 }

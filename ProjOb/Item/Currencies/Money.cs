@@ -12,4 +12,8 @@ public class Money : Currency
         ((Player)Owner!).Currencies["Money"].Amount += Amount;
         return (true, null);
     }
+
+    public Money()
+    {
+    }
 }

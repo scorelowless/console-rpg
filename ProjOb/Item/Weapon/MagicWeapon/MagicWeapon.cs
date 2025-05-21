@@ -6,9 +6,9 @@ public abstract class MagicWeapon : Weapon
     {
     }
 
-    public override void Attack(IAttackVisitor v)
+    public override int Attack(IAttackVisitor v)
     {
-        v.AttackMagic(this);
+        return v.AttackMagic(this);
     }
     
     public override void OnPickUp(Entity entity)

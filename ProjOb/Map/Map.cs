@@ -4,17 +4,22 @@ namespace ProjOb;
 
 public class Map
 {
-    private readonly int _mapSizeX;
-    private readonly int _mapSizeY;
-    private readonly Tile[,] _tiles;
-    public Tile this[int x, int y] => _tiles[x, y];
+    public int MapSizeX { get; set; }
+    public int MapSizeY { get; set; }
+    public List<List<Tile>> Tiles { get; set; } = null!;
+    public Tile this[int x, int y] => Tiles[x][y];
 
-    public Map(Tile[,] tiles, int x, int y)
+    public Map(List<List<Tile>> tiles, int x, int y)
     {
-        _tiles = tiles;
-        _mapSizeX = x;
-        _mapSizeY = y;
+        Tiles = tiles;
+        MapSizeX = x;
+        MapSizeY = y;
     }
+
+    public Map()
+    {
+    }
+
     public Tile NextTile(Tile tile, Direction direction)
     {
         Point position = new Point(tile.Position.X, tile.Position.Y);
@@ -36,11 +41,11 @@ public class Map
                 throw new ArgumentOutOfRangeException(nameof(direction));
         }
 
-        if (position.X < 0 || position.X >= _mapSizeX || position.Y < 0 || position.Y >= _mapSizeY ||
-            !_tiles[position.X, position.Y].IsNotWall)
+        if (position.X < 0 || position.X >= MapSizeX || position.Y < 0 || position.Y >= MapSizeY ||
+            !Tiles[position.X][position.Y].IsNotWall)
         {
             return tile;
         }
-        return _tiles[position.X, position.Y];
+        return Tiles[position.X][position.Y];
     }
 }

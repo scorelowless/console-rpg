@@ -6,9 +6,9 @@ public abstract class LightWeapon : Weapon
     {
     }
 
-    public override void Attack(IAttackVisitor v)
+    public override int Attack(IAttackVisitor v)
     {
-        v.AttackLight(this);
+        return v.AttackLight(this);
     }
 
     public override void OnPickUp(Entity entity)

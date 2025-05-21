@@ -1,21 +1,20 @@
-using System.Collections;
 using System.Drawing;
 
 namespace ProjOb;
 
-public class Tile : IEnumerable<IMappable>
+public class Tile
 {
-    public readonly Map Map;
-    private readonly List<IItem> _items = [];
-    private readonly List<Enemy> _enemies = [];
-    private Player? _player;
-    public Point Position { get; }
+    public Map Map { get; set; } = null!;
+    public List<IItem> Items { get; set; } = [];
+    public List<Enemy> Enemies { get; set; } = [];
+    public Player? Player { get; set; }
+    public Point Position { get; set; }
     public bool IsNotWall { get; set; }
     public ColoredChar Print()
     {
-        if (_player != null) return _player.Display;
-        if (_enemies.Count != 0) return _enemies[^1].Display;
-        if(_items.Count != 0) return _items[0].Display;
+        if (Player != null) return Player.Display;
+        if (Enemies.Count != 0) return Enemies[^1].Display;
+        if(Items.Count != 0) return Items[0].Display;
         if (!IsNotWall) return new ColoredChar('\u2588');
         return new ColoredChar(' ');
     }
@@ -26,51 +25,53 @@ public class Tile : IEnumerable<IMappable>
         IsNotWall = isNotWall;
         Position = position;
     }
+    
+    public Tile()
+    {
+    }
 
     public void AddItem(IItem item)
     {
-        _items.Add(item);
+        Items.Add(item);
     }
 
     public void AddEnemy(Enemy enemy)
     {
-        _enemies.Add(enemy);
+        Enemies.Add(enemy);
     }
 
     public void AddPlayer(Player player)
     {
-        _player = player;
+        Player = player;
     }
 
     public IItem? Pick(int ind)
     {
-        if(_items.Count <= ind) return null;
-        IItem item = _items[ind];
-        _items.RemoveAt(ind);
+        if(Items.Count <= ind) return null;
+        IItem item = Items[ind];
+        Items.RemoveAt(ind);
         return item;
     }
 
     public void RemoveItem(IItem item)
     {
-        _items.Remove(item);
+        Items.Remove(item);
     }
     public void RemoveEnemy(Enemy enemy)
     {
-        _enemies.Remove(enemy);
+        Enemies.Remove(enemy);
     }
 
     public void RemovePlayer()
     {
-        _player = null;
+        Player = null;
     }
     
-    public Enemy? ContainsEnemies() => _enemies.Count == 0 ? null : _enemies[0];
+    public Enemy? ContainsEnemies() => Enemies.Count == 0 ? null : Enemies[0];
 
-    public bool ContainsItems => _items.Count != 0;
+    public bool ContainsItems() => Items.Count != 0;
     
-    public bool ContainsPlayer() => _player != null;
+    public bool ContainsPlayer() => Player != null;
     
-    public IEnumerator<IMappable> GetEnumerator() => _items.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public IEnumerator<IMappable> GetEnumerator() => Items.GetEnumerator();
 }

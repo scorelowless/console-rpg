@@ -16,26 +16,46 @@ public class MapBuilder : IMapBuilder
 
     public void Empty()
     { 
-        Tile[,] tiles = new Tile[MapSizeX, MapSizeY];
+        List<List<Tile>> tiles = new();
+        for (int x = 0; x < MapSizeX; x++)
+        {
+            List<Tile> row = new();
+            for (int y = 0; y < MapSizeY; y++)
+            {
+                row.Add(new Tile());
+            }
+            tiles.Add(row);
+        }
+        
         _map = new Map(tiles, MapSizeX, MapSizeY);
         for (int i = 0; i < MapSizeX; i++)
         {
             for (int j = 0; j < MapSizeY; j++)
             {
-                tiles[i, j] = new Tile(_map, true, new Point(i, j));
+                tiles[i][j] = new Tile(_map, true, new Point(i, j));
             }
         }
     }
 
     public void Full()
     {
-        Tile[,] tiles = new Tile[MapSizeX, MapSizeY];
+        List<List<Tile>> tiles = new();
+        for (int x = 0; x < MapSizeX; x++)
+        {
+            List<Tile> row = new();
+            for (int y = 0; y < MapSizeY; y++)
+            {
+                row.Add(new Tile());
+            }
+            tiles.Add(row);
+        }
+        
         _map = new Map(tiles, MapSizeX, MapSizeY);
         for (int i = 0; i < MapSizeX; i++)
         {
             for (int j = 0; j < MapSizeY; j++)
             {
-                tiles[i, j] = new Tile(_map, false, new Point(i, j));
+                tiles[i][j] = new Tile(_map, false, new Point(i, j));
             }
         }
     }

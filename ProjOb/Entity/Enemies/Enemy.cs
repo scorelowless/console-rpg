@@ -1,10 +1,21 @@
+using System.Text.Json.Serialization;
+
 namespace ProjOb;
 
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
+[JsonDerivedType(typeof(Goblin), "Goblin")]
+[JsonDerivedType(typeof(Kobold), "Kobold")]
+[JsonDerivedType(typeof(Mage), "Mage")]
+[JsonDerivedType(typeof(Ogre), "Ogre")]
 public abstract class Enemy : Entity
 {
     protected Enemy(string name, char display, Tile position) : base(name, display, position, ConsoleColor.DarkRed)
     {
         position.AddEnemy(this);
+    }
+    
+    public Enemy()
+    {
     }
 
     public override void ReceiveDamage(int damage)
@@ -16,8 +27,8 @@ public abstract class Enemy : Entity
         }
     }
 
-    public void Attack(Entity target)
+    public IResultType Attack(Entity target)
     {
-        Attack(-1, target);
+        return Attack(-1, target);
     }
 }

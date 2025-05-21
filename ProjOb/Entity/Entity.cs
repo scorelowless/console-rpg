@@ -1,20 +1,16 @@
-using System.Collections.Immutable;
-
 namespace ProjOb;
 
 public abstract class Entity : IMappable
 {
-    public string Name { get; }
-    public Tile Position { get; protected set; }
+    public string Name { get; set; } = null!;
+    public Tile Position { get; set; } = null!;
     
-    public Inventory Inventory { get; } = new();
+    public Inventory Inventory { get; set; } = new();
 
-    public ColoredChar Display { get; }
-    public Dictionary<StatsType, int> Stats { get; }
-    
-    private readonly List<IEffect> _effects = [];
-    public ImmutableList<IEffect> Effects => _effects.ToImmutableList();
-    private readonly List<ITourWatch?> _tourSubscribers = [];
+    public ColoredChar Display { get; set; }
+    public Dictionary<StatsType, int> Stats { get; set; } = null!;
+    public List<IEffect> Effects { get; set; } = [];
+    public List<ITourWatch?> TourSubscribers { get; set; } = [];
 
     protected Entity(string name, char display, Tile position, ConsoleColor color)
     {
@@ -33,6 +29,10 @@ public abstract class Entity : IMappable
         };
     }
 
+    public Entity()
+    {
+    }
+
     protected void SetStats(int power, int agility, int luck, int aggression, int wisdom, int health, int armor)
     {
         Stats[StatsType.Power] = power;
@@ -46,38 +46,38 @@ public abstract class Entity : IMappable
     protected void NextTour()
     {
         // ReSharper disable once ForCanBeConvertedToForeach
-        for (int i = 0; i < _tourSubscribers.Count; i++)
+        for (int i = 0; i < TourSubscribers.Count; i++)
         {
-            _tourSubscribers[i]?.Update();
+            TourSubscribers[i]?.Update();
         }
-        _tourSubscribers.RemoveAll(t => t == null);
+        TourSubscribers.RemoveAll(t => t == null);
     }
-    public void AddSubscriber(ITourWatch watcher) => _tourSubscribers.Add(watcher);
+    public void AddSubscriber(ITourWatch watcher) => TourSubscribers.Add(watcher);
 
     public void RemoveSubscriber(ITourWatch watcher)
     {
-        int ind = _tourSubscribers.IndexOf(watcher);
+        int ind = TourSubscribers.IndexOf(watcher);
         if (ind != -1)
         {
-            _tourSubscribers[ind] = null;
+            TourSubscribers[ind] = null;
         }
     }
 
     public void AddEffect(IEffect effect)
     {
-        _effects.Add(effect);
+        Effects.Add(effect);
         AddSubscriber(effect);
     }
     public void RemoveEffect(IEffect effect)
     {
         effect.OnRemove();
-        _effects.Remove(effect);
+        Effects.Remove(effect);
         RemoveSubscriber(effect);
     }
 
     public abstract void ReceiveDamage(int damage);
 
-    protected abstract IActionType Attack(int type, Entity target);
+    protected abstract IResultType Attack(int type, Entity target);
 
     public enum StatsType
     {

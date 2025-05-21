@@ -1,17 +1,15 @@
-namespace ProjOb.ActionType;
+namespace ProjOb.ResultType;
 
-public class Move : IActionType
+public class Move : IResultType
 {
     private readonly Direction _direction;
     private readonly Enemy? _nearbyEnemy;
-    public Move(Entity sender, Direction direction, Enemy? nearbyEnemy)
+    public Move(Direction direction, Enemy? nearbyEnemy)
     {
-        Sender = sender;
         _direction = direction;
         _nearbyEnemy = nearbyEnemy;
     }
     public bool WasSuccessful => true;
-    public bool IsPrompt => false;
     public bool IsSenderDead => false;
     public string Message
     {
@@ -33,5 +31,4 @@ public class Move : IActionType
             return ret;
         }
     }
-    public Entity Sender { get; }
 }

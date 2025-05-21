@@ -2,8 +2,8 @@ namespace ProjOb;
 
 public abstract class EffectWeapon : IWeapon
 {
-    protected readonly IWeapon Weapon;
-    private readonly string _effectName;
+    public IWeapon Weapon { get; set; } = null!;
+    public string EffectName { get; set; } = null!;
 
     public string Info => $"Damage: {Damage}";
     public Entity? Owner => Weapon.Owner;
@@ -25,12 +25,12 @@ public abstract class EffectWeapon : IWeapon
     }
 
     public virtual void OnUnequip() => Weapon.OnUnequip();
-    public void Attack(IAttackVisitor v) => Weapon.Attack(v);
+    public int Attack(IAttackVisitor v) => Weapon.Attack(v);
 
     public IWeapon ToWeapon() => this;
 
     public ColoredChar Display { get; }
-    public string Name => Weapon.Name + _effectName;
+    public string Name => Weapon.Name + EffectName;
 
     public IHeldable ToHeldable() => this;
 
@@ -38,8 +38,12 @@ public abstract class EffectWeapon : IWeapon
     protected EffectWeapon(IWeapon weapon, string effectName)
     {
         Weapon = weapon;
-        _effectName = effectName;
+        EffectName = effectName;
         Display = new ColoredChar(Weapon.Display.Character, ConsoleColor.Cyan);
+    }
+
+    public EffectWeapon()
+    {
     }
 
     public virtual IWeapon RemoveEffect() => Weapon;

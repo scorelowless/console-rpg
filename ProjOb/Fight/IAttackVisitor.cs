@@ -2,9 +2,9 @@ namespace ProjOb;
 
 public interface IAttackVisitor
 {
-    void AttackHeavy(IWeapon w);
-    void AttackLight(IWeapon w);
-    void AttackMagic(IWeapon w);
+    int AttackHeavy(IWeapon w);
+    int AttackLight(IWeapon w);
+    int AttackMagic(IWeapon w);
 
     int Armor { get; }
 }

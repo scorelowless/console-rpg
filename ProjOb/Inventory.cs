@@ -2,54 +2,54 @@ namespace ProjOb;
 
 public class Inventory
 {
-    private readonly List<IHeldable> _heldItems = [];
-    private int _freeHands = 2;
-    private const int InventorySize = 20;
-    private readonly List<IItem> _inventory = [];
-    public IEnumerable<IItem> Get => _inventory;
+    public List<IHeldable> HeldItems { get; set; } = [];
+    public int FreeHands { get; set; } = 2;
+    private const int INVENTORY_SIZE  = 20;
+    public List<IItem> InventoryContent { get; set; } = [];
+    public IEnumerable<IItem> Get => InventoryContent;
     public List<IHeldable?> HeldItemsHands
     {
         get
         {
-            if (_freeHands == 2) return [null, null];
-            if (_freeHands == 1) return [_heldItems[0], null];
-            if (_heldItems[0].HandsTaken == 2) return [_heldItems[0], null];
-            return [_heldItems[0], _heldItems[1]];
+            if (FreeHands == 2) return [null, null];
+            if (FreeHands == 1) return [HeldItems[0], null];
+            if (HeldItems[0].HandsTaken == 2) return [HeldItems[0], null];
+            return [HeldItems[0], HeldItems[1]];
         }
     }
     
-    public List<IHeldable> HeldItemsList => _heldItems;
+    public List<IHeldable> HeldItemsList => HeldItems;
 
-    public bool IsFull => _inventory.Count >= InventorySize;
+    public bool IsFull => InventoryContent.Count >= INVENTORY_SIZE;
     public void Add(IItem item)
     {
         if(IsFull) return;
-        _inventory.Add(item);
+        InventoryContent.Add(item);
     }
-    public IItem? this[int index] => index < ItemCount && index >= 0 ? _inventory[index] : null;
-    public int ItemCount => _inventory.Count;
+    public IItem? this[int index] => index < ItemCount && index >= 0 ? InventoryContent[index] : null;
+    public int ItemCount => InventoryContent.Count;
     
     public IItem? RemoveSelected(int ind)
     {
         if (ItemCount <= ind || ind < 0) return null;
-        var item = _inventory[ind];
-        _inventory.RemoveAt(ind);
+        var item = InventoryContent[ind];
+        InventoryContent.RemoveAt(ind);
         return item;
     }
     
     public bool Grab(IHeldable heldable)
     {
-        if(heldable.HandsTaken > _freeHands)
+        if(heldable.HandsTaken > FreeHands)
         {
             return false;
         }
-        _heldItems.Add(heldable);
-        _freeHands -= heldable.HandsTaken;
+        HeldItems.Add(heldable);
+        FreeHands -= heldable.HandsTaken;
         return true;
     }
 
     public IHeldable? Ungrab()
     {
-        return _heldItems.Count != 0 ? _heldItems.PopBack() : null;
+        return HeldItems.Count != 0 ? HeldItems.PopBack() : null;
     }
 }

@@ -2,19 +2,25 @@ namespace ProjOb;
 
 public class Player : Entity
 {
-    public Enemy? NearbyEnemy { get; private set; }
-    public Dictionary<string, Currency> Currencies { get; } = new()
+    public Enemy? NearbyEnemy { get; set; }
+    public int Number { get; set; }
+    public Dictionary<string, Currency> Currencies { get; set; } = new()
     {
         { "Money", new Money(0) },
         { "Gold", new Gold(0) }
     };
 
-    public Player(Map map) : base("Player", '¶', map[0,0], ConsoleColor.Blue)
+    public Player(Map map, int number) : base("Player", (char)('1' + number), map[0,0], ConsoleColor.Cyan)
     {
+        Number = number;
         map[0, 0].AddPlayer(this);
         var r = new Random();
         SetStats(r.Next(5, 15), r.Next(5, 15), r.Next(5, 15), r.Next(5, 15), r.Next(5, 15), 50, 0);
         UpdateNearbyEnemy();
+    }
+
+    public Player()
+    {
     }
 
     private void UpdateNearbyEnemy()
@@ -25,44 +31,44 @@ public class Player : Entity
                       Position.Map.NextTile(Position, Direction.Left).ContainsEnemies() ??
                       null;
     }
-    public IActionType Move(Direction direction)
+    public IResultType Move(Direction direction)
     {
         Tile nextPosition = Position.Map.NextTile(Position, direction);
         if (nextPosition == Position || nextPosition.ContainsEnemies() != null || nextPosition.ContainsPlayer())
-            return new ActionType.CantMove(this);
+            return ResultType.Unsuccessful.CantMove();
         Position.RemovePlayer();
         Position = nextPosition;
         Position.AddPlayer(this);
         UpdateNearbyEnemy();
         NextTour();
-        return new ActionType.Move(this, direction, NearbyEnemy);
+        return new ResultType.Move(direction, NearbyEnemy);
     }
 
-    public IActionType PickUp(int ind)
+    public IResultType PickUp(int ind)
     {
         if (Inventory.IsFull)
         {
-            return new ActionType.InventoryFull(this);
+            return ResultType.Unsuccessful.InventoryFull();
         }
         var temp = Position.Pick(ind);
-        if (temp == null) return new ActionType.TileEmpty(this);
+        if (temp == null) return ResultType.Unsuccessful.TileEmpty();
         temp.OnPickUp(this);
         Inventory.Add(temp);
         NextTour();
-        return new ActionType.PickUp(this, temp);
+        return new ResultType.PickUp(temp);
     }
     
-    public IActionType ThrowAway(int ind)
+    public IResultType ThrowAway(int ind)
     {
         IItem? item = Inventory.RemoveSelected(ind);
-        if (item == null) return new ActionType.InvalidInventorySlot(this);
+        if (item == null) return ResultType.Unsuccessful.InvalidInventorySlot();
         Position.AddItem(item);
         item.OnThrow();
         NextTour();
-        return new ActionType.ThrowAway(this, item);
+        return new ResultType.ThrowAway(item);
     }
 
-    public IActionType DropEverythingNow()
+    public IResultType DropEverythingNow()
     {
         while (Inventory.ItemCount > 0)
         {
@@ -71,57 +77,57 @@ public class Player : Entity
             item!.OnThrow();
         }
         NextTour();
-        return new ActionType.DropEverything(this);
+        return new ResultType.DropEverything();
     }
 
-    public IActionType Use(int ind)
+    public IResultType Use(int ind)
     {
         IItem? I = Inventory[ind];
-        if(I == null) return new ActionType.InvalidInventorySlot(this);
+        if(I == null) return ResultType.Unsuccessful.InvalidInventorySlot();
         var res = I.OnUse(); // try to use item
-        if (!res.Item1) return new ActionType.CantUse(this); // if it cannot be used
+        if (!res.Item1) return ResultType.Unsuccessful.CantUse(); // if it cannot be used
         if (res.Item2 == null) // if item after use is used (null)
         {
             Inventory.RemoveSelected(ind);
             NextTour();
-            return new ActionType.Use(this, I);
+            return new ResultType.Use(I);
         }
         IHeldable? h = res.Item2.ToHeldable();
         if (h != null && Inventory.Grab(h)) // if the item is IHeldable and can be grabbed
         {
             Inventory.RemoveSelected(ind);
             NextTour();
-            return new ActionType.Equip(this, I);
+            return new ResultType.Equip(I);
         }
         // if the item is IHeldable and there's no space in hands
         NextTour();
-        return new ActionType.HandsFull(this);
+        return ResultType.Unsuccessful.HandsFull();
     }
 
-    public IActionType Unequip()
+    public IResultType Unequip()
     {
         if (Inventory.IsFull)
         {
-            return new ActionType.InventoryFull(this);
+            return ResultType.Unsuccessful.InventoryFull();
         }
         var t = Inventory.Ungrab();
-        if (t == null) return new ActionType.NothingHeld(this);
+        if (t == null) return ResultType.Unsuccessful.NothingHeld();
         t.OnUnequip();
         Inventory.Add(t);
         NextTour();
-        return new ActionType.Unequip(this, t);
+        return new ResultType.Unequip(t);
     }
 
-    public IActionType Attack(int type)
+    public IResultType Attack(int type)
     {
         return Attack(type, NearbyEnemy);
     }
 
-    protected override IActionType Attack(int type, Entity? _)
+    protected override IResultType Attack(int type, Entity? _)
     {
-        if (NearbyEnemy == null) return new ActionType.NoEnemy(this);
+        if (NearbyEnemy == null) return ResultType.Unsuccessful.NoEnemy();
         Enemy target = NearbyEnemy;
-        if (type < 0 || type > 2) return new ActionType.WrongAttack(this);
+        if (type < 0 || type > 2) return ResultType.Unsuccessful.WrongAttack();
         var weap = Inventory.HeldItemsList.Select(heldable => heldable.ToWeapon()).ToList();
         weap.RemoveAll(w => w == null);
 
@@ -132,19 +138,21 @@ public class Player : Entity
             2 => new MagicAttack(this, target),
             _ => throw new Exception("Unexpected behavior in Player.Attack")
         };
-        
+
+        int damage = 0;
         foreach (IWeapon? weapon in weap)
         {
-            weapon?.Attack(visitor);
+            damage += weapon?.Attack(visitor) ?? 0;
         }
         Stats[StatsType.Armor] = visitor.Armor;
         
         NextTour();
         UpdateNearbyEnemy();
-        if (NearbyEnemy != target) return new ActionType.Attack(this, target);
-        target.Attack(this);
+        IResultType attack1 = new ResultType.Attack(this, target, damage);
+        if (NearbyEnemy != target) return attack1;
+        IResultType attack2 = target.Attack(this);
         if (Stats[StatsType.Health] <= 0) return Die();
-        return new ActionType.Defense(this, target);
+        return new ResultType.Defense(attack1, attack2);
     }
 
     public override void ReceiveDamage(int damage)
@@ -152,10 +160,10 @@ public class Player : Entity
         Stats[StatsType.Health] -= int.Max(damage - Stats[StatsType.Armor], 0);
     }
 
-    public IActionType Die()
+    public IResultType Die()
     {
         DropEverythingNow();
         Position.RemovePlayer();
-        return new ActionType.Death(this);
+        return new ResultType.Die();
     }
 }

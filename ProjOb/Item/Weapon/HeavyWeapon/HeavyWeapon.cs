@@ -6,9 +6,9 @@ public abstract class HeavyWeapon : Weapon
     {
     }
 
-    public override void Attack(IAttackVisitor v)
+    public override int Attack(IAttackVisitor v)
     {
-        v.AttackHeavy(this);
+        return v.AttackHeavy(this);
     }
     
     public override void OnPickUp(Entity entity)
