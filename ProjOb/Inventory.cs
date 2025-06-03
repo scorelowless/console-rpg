@@ -13,7 +13,7 @@ public class Inventory
         {
             if (FreeHands == 2) return [null, null];
             if (FreeHands == 1) return [HeldItems[0], null];
-            if (HeldItems[0].HandsTaken == 2) return [HeldItems[0], null];
+            if (HeldItems[0].HandsTaken == 2) return [HeldItems[0], HeldItems[0]];
             return [HeldItems[0], HeldItems[1]];
         }
     }

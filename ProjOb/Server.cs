@@ -79,6 +79,7 @@ public class Server
                 lock (_modelMutex)
                 {
                     result = message.Execute(_model);
+                    _model.Map.UpdateEnemies(player);
                 }
                 if (result.WasSuccessful)
                 { 

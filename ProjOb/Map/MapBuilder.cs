@@ -269,15 +269,18 @@ public class MapBuilder : IMapBuilder
     public void AddEnemies(int n)
     {
         CheckNull();
+        int ind = 0;
         foreach (Tile tile in GetTiles(n))
         {
-            Enemy _ = _r.NextDouble() switch
+            Enemy enemy = _r.NextDouble() switch
             {
-                < 0.25 => new Goblin(tile),
-                < 0.5 => new Kobold(tile),
-                < 0.75 => new Mage(tile),
-                _ => new Ogre(tile)
+                < 0.25 => new Goblin(tile, ind),
+                < 0.5 => new Kobold(tile, ind),
+                < 0.75 => new Mage(tile, ind),
+                _ => new Ogre(tile, ind)
             };
+            _map!.Enemies.Add(enemy);
+            ind++;
         }
     }
 

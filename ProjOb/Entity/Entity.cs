@@ -76,6 +76,7 @@ public abstract class Entity : IMappable
     }
 
     public abstract void ReceiveDamage(int damage);
+    public abstract IResultType Move(Direction direction);
 
     protected abstract IResultType Attack(int type, Entity target);
 

@@ -3,7 +3,6 @@ namespace ProjOb.ResultType;
 public class Unsuccessful : IResultType
 {
     public bool WasSuccessful => false;
-    public bool IsSenderDead => false;
     public string Message { get; }
 
     private Unsuccessful(string message)

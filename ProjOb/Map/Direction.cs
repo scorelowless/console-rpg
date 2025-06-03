@@ -2,6 +2,7 @@ namespace ProjOb;
 
 public enum Direction
 {
+    None,
     Up,
     Right,
     Down,

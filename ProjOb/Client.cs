@@ -31,21 +31,38 @@ public class Client
                     IActionType? message = await NetworkMethods.ReceiveDataAsync<IActionType>(stream);
                     if (message == null) break;
                     var result = message.Execute(model);
-                    if (result.IsSenderDead && message.PlayerIndex == index)
+                    var enemyresult = model.Map.UpdateEnemies(player);
+                    if (player.IsDead)
                     {
                         _isAlive = false;
                         break;
                     }
-
-                    if (result.WasSuccessful)
+                    player.UpdateNearbyEnemy();
+                    if (result.WasSuccessful || enemyresult.Count > 0)
                     {
                         display.Update();
                     }
 
-                    if (message.PlayerIndex == index)
+                    bool wasPlayerAttacked = false;
+                    foreach (IResultType resultType in enemyresult)
+                    {
+                        if(resultType.WasAttack && ((ResultType.Attack)resultType).Target == player)
+                        {
+                            if (player.IsDead)
+                            {
+                                _isAlive = false;
+                                break;
+                            }
+                            display.Log(resultType.Message);
+                            wasPlayerAttacked = true;
+                            break;
+                        }
+                    }
+                    if (!wasPlayerAttacked && message.PlayerIndex == index)
                     {
                         display.Log(result.Message);
                     }
+                    
                 }
             });
 

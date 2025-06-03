@@ -2,12 +2,13 @@ namespace ProjOb;
 
 public class Goblin : Enemy
 {
-    public Goblin(Tile position) : base("Goblin", 'g', position)
+    public Goblin(Tile position, int index) : base("Goblin", 'g', position, index)
     {
         SetStats(5,5,5,5,5,10, 5);
         var smallsword = new SmallSword();
         Inventory.Grab(smallsword);
         smallsword.OnPickUp(this);
+        Strategy = new EnemyStrategyAfraid();
     }
     
     public Goblin()
@@ -21,7 +22,10 @@ public class Goblin : Enemy
         {
             damage += heldable.ToWeapon()?.Attack(new NormalAttack(this, target)) ?? 0;
         }
-
         return new ResultType.Attack(this, target, damage);
+    }
+
+    protected override void StrategyUpdate(Player _)
+    {
     }
 }

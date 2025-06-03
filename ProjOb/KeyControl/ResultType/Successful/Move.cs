@@ -9,8 +9,6 @@ public class Move : IResultType
         _direction = direction;
         _nearbyEnemy = nearbyEnemy;
     }
-    public bool WasSuccessful => true;
-    public bool IsSenderDead => false;
     public string Message
     {
         get

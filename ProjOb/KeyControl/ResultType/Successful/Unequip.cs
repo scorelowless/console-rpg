@@ -7,7 +7,5 @@ public class Unequip : IResultType
     {
         _item = item;
     }
-    public bool WasSuccessful => true;
-    public bool IsSenderDead => false;
     public string Message => $"Player unequipped {_item.Name}";
 }

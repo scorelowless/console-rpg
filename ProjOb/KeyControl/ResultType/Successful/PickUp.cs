@@ -7,7 +7,5 @@ public class PickUp : IResultType
     {
         _item = item;
     }
-    public bool WasSuccessful => true;
-    public bool IsSenderDead => false;
     public string Message => $"Picked up {_item.Name}";
 }

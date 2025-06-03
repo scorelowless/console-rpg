@@ -7,6 +7,7 @@ public class Map
     public int MapSizeX { get; set; }
     public int MapSizeY { get; set; }
     public List<List<Tile>> Tiles { get; set; } = null!;
+    public List<Enemy?> Enemies { get; set; } = [];
     public Tile this[int x, int y] => Tiles[x][y];
 
     public Map(List<List<Tile>> tiles, int x, int y)
@@ -37,6 +38,8 @@ public class Map
             case Direction.Right:
                 position.X++;
                 break;
+            case Direction.None:
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(direction));
         }
@@ -47,5 +50,24 @@ public class Map
             return tile;
         }
         return Tiles[position.X][position.Y];
+    }
+
+    public List<IResultType> UpdateEnemies(Player player)
+    {
+        List<IResultType> results = [];
+        foreach (Enemy? enemy in Enemies)
+        {
+            IResultType? result = enemy?.ExecuteStrategy(player);
+            if (result != null) 
+            {
+                results.Add(result);
+            }
+        }
+        return results;
+    }
+
+    public int CheckDistance(Tile t1, Tile t2)
+    {
+        return Math.Abs(t1.Position.X - t2.Position.X) + Math.Abs(t1.Position.Y - t2.Position.Y);
     }
 }

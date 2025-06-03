@@ -7,7 +7,5 @@ public class ThrowAway : IResultType
     {
         _item = item;
     }
-    public bool WasSuccessful => true;
-    public bool IsSenderDead => false;
     public string Message => $"Player threw {_item.Name} away";
 }

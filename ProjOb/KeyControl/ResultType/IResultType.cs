@@ -2,7 +2,7 @@ namespace ProjOb;
 
 public interface IResultType
 {
-    bool WasSuccessful { get; }
-    bool IsSenderDead { get; }
+    bool WasSuccessful => true;
+    bool WasAttack => false;
     string Message { get; }
 }

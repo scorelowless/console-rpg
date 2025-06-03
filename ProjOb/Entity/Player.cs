@@ -4,6 +4,7 @@ public class Player : Entity
 {
     public Enemy? NearbyEnemy { get; set; }
     public int Number { get; set; }
+    public bool IsDead => Stats[StatsType.Health] <= 0;
     public Dictionary<string, Currency> Currencies { get; set; } = new()
     {
         { "Money", new Money(0) },
@@ -23,7 +24,7 @@ public class Player : Entity
     {
     }
 
-    private void UpdateNearbyEnemy()
+    public void UpdateNearbyEnemy()
     {
         NearbyEnemy = Position.Map.NextTile(Position, Direction.Up).ContainsEnemies() ??
                       Position.Map.NextTile(Position, Direction.Right).ContainsEnemies() ??
@@ -31,7 +32,7 @@ public class Player : Entity
                       Position.Map.NextTile(Position, Direction.Left).ContainsEnemies() ??
                       null;
     }
-    public IResultType Move(Direction direction)
+    public override IResultType Move(Direction direction)
     {
         Tile nextPosition = Position.Map.NextTile(Position, direction);
         if (nextPosition == Position || nextPosition.ContainsEnemies() != null || nextPosition.ContainsPlayer())
@@ -148,22 +149,20 @@ public class Player : Entity
         
         NextTour();
         UpdateNearbyEnemy();
-        IResultType attack1 = new ResultType.Attack(this, target, damage);
-        if (NearbyEnemy != target) return attack1;
-        IResultType attack2 = target.Attack(this);
-        if (Stats[StatsType.Health] <= 0) return Die();
-        return new ResultType.Defense(attack1, attack2);
+        return new ResultType.Attack(this, target, damage);
     }
 
     public override void ReceiveDamage(int damage)
     {
         Stats[StatsType.Health] -= int.Max(damage - Stats[StatsType.Armor], 0);
+        if (IsDead) Die();
     }
 
     public IResultType Die()
     {
+        Stats[StatsType.Health] = 0;
         DropEverythingNow();
         Position.RemovePlayer();
-        return new ResultType.Die();
+        return new ResultType.Resign();
     }
 }

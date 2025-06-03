@@ -7,7 +7,5 @@ public class Equip : IResultType
     {
         _item = item;
     }
-    public bool WasSuccessful => true;
-    public bool IsSenderDead => false;
     public string Message => $"Player equipped {_item.Name}";
 }
