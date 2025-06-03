@@ -50,6 +50,8 @@ public class Inventory
 
     public IHeldable? Ungrab()
     {
-        return HeldItems.Count != 0 ? HeldItems.PopBack() : null;
+        IHeldable? ret = HeldItems.Count != 0 ? HeldItems.PopBack() : null;
+        FreeHands += ret?.HandsTaken ?? 0;
+        return ret;
     }
 }

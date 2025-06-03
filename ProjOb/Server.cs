@@ -36,9 +36,8 @@ public class Server
         }
         catch (Exception e)
         {
-            Console.WriteLine("Unexpected exception in listener Task");
-            Console.WriteLine(e);
-            throw;
+            _display.WriteError("Unexpected exception in listener Task:");
+            _display.WriteError(e.ToString());
         }
     }
     
@@ -80,6 +79,7 @@ public class Server
                 {
                     result = message.Execute(_model);
                     _model.Map.UpdateEnemies(player);
+                    player.UpdateNearbyEnemy();
                 }
                 if (result.WasSuccessful)
                 { 
@@ -101,11 +101,18 @@ public class Server
             client.Close();
             _streams[index] = null;
         }
+        catch (IOException)
+        {
+            _display.WriteInfo($"Connection with client {index + 1} terminated");
+            client.Close();
+            _streams[index] = null;
+        }
         catch (Exception e)
         {
-            Display d =  Display.GetInstance();
-            d.WriteError("Unexpected exception in client handling Task:");
-            d.WriteError(e.ToString());
+            _display.WriteError("Unexpected exception in client handling Task:");
+            _display.WriteError(e.ToString());
+            client.Close();
+            _streams[index] = null;
         }
     }
 }
