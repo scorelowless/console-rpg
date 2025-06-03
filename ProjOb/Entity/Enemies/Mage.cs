@@ -2,7 +2,7 @@ namespace ProjOb;
 
 public class Mage : Enemy
 {
-    public int StrategyCounter {get; set;}
+    public int StrategyCounter {get; set; }
     public Mage(Tile position, int index) : base("Mage", 'm', position, index)
     {
         SetStats(10,10,10,10,10,30, 5);

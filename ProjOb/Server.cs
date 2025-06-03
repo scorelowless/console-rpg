@@ -59,8 +59,13 @@ public class Server
                 Model = _model,
                 Index = index
             };
-        
-            await NetworkMethods.SendDataAsync(stream, modelTransfer);
+
+            string json;
+            lock (_modelMutex)
+            {
+                json = NetworkMethods.SerializeData(modelTransfer);
+            }
+            await NetworkMethods.SendJsonAsync(stream, json);
             _display.WriteInfo($"Sent model to client {index + 1}");
             IActionType newPlayer = new AddPlayer(index);
             for (int i = 0; i < _streams.Length; i++)
@@ -69,31 +74,48 @@ public class Server
                 if (networkStream == null || i == index) continue;
                 await NetworkMethods.SendDataAsync(networkStream, newPlayer);
             }
+            lock (_modelMutex)
+            {
+                _model.Map.UpdateEnemies(player);
+                foreach (Player modelPlayer in _model.Players)
+                {
+                    modelPlayer.UpdateNearbyEnemy();
+                }
+            }
 
             while (true)
             {
                 IActionType? message = await NetworkMethods.ReceiveDataAsync<IActionType>(stream);
                 if (message == null) break;
                 IResultType result;
+                List<IResultType> enemyResult;
                 lock (_modelMutex)
                 {
                     result = message.Execute(_model);
-                    _model.Map.UpdateEnemies(player);
-                    player.UpdateNearbyEnemy();
-                }
-                if (result.WasSuccessful)
-                { 
-                    _display.WriteSuccess($"{index + 1}: {result.Message}");
-                    foreach (var networkStream in _streams)
+                    enemyResult = _model.Map.UpdateEnemies(player);
+                    foreach (Player modelPlayer in _model.Players)
                     {
-                        if (networkStream == null) continue;
-                        await NetworkMethods.SendDataAsync(networkStream, message);
+                        modelPlayer.UpdateNearbyEnemy();
                     }
+                }
+                foreach (IResultType resultType in enemyResult)
+                {
+                    _display.WriteSuccess(resultType.Message);
+                }
+
+                if (result.WasSuccessful)
+                {
+                    _display.WriteSuccess($"{index + 1}: {result.Message}");
                 }
                 else
                 {
                     _display.WriteUnsuccess($"{index + 1}: {result.Message}");
-                    await NetworkMethods.SendDataAsync(stream, message);
+                }
+                
+                foreach (var networkStream in _streams)
+                {
+                    if (networkStream == null) continue;
+                    await NetworkMethods.SendDataAsync(networkStream, message);
                 }
             }
             _display.WriteInfo($"Connection with client {index + 1} terminated");

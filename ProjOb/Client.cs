@@ -22,47 +22,57 @@ public class Client
                 MapBuilderDirector.GenerateBasicMap(new KeyControlBuilder(index, display)) as IKeyControl ??
                 throw new Exception("MapBuilderDirector.GenerateBasicMap returned null");
             display.Log("You can start playing now!");
+            
+            model.Map.UpdateEnemies(player);
+            foreach (Player modelPlayer in model.Players)
+            {
+                modelPlayer.UpdateNearbyEnemy();
+            }
 
             _ = Task.Run(async () =>
             {
-                while (true)
+                while (_isAlive)
                 {
                     // ReSharper disable once AccessToDisposedClosure
                     IActionType? message = await NetworkMethods.ReceiveDataAsync<IActionType>(stream);
                     if (message == null) break;
                     var result = message.Execute(model);
-                    var enemyresult = model.Map.UpdateEnemies(player);
+                    var enemyResult = model.Map.UpdateEnemies(model.Players[message.PlayerIndex]);
+                    foreach (Player modelPlayer in model.Players)
+                    {
+                        modelPlayer.UpdateNearbyEnemy();
+                    }
+                    display.Update();
+                    if (result.WasSuccessful)
+                    {
+                        bool wasPlayerAttacked = false;
+                        foreach (IResultType resultType in enemyResult)
+                        {
+                            if(resultType.WasAttack && ((ResultType.Attack)resultType).Target == player)
+                            {
+                                display.Log(resultType.Message);
+                                wasPlayerAttacked = true;
+                                if (player.IsDead)
+                                {
+                                    _isAlive = false;
+                                }
+                                break;
+                            }
+                        }
+                        if (!wasPlayerAttacked && message.PlayerIndex == index)
+                        {
+                            display.Log(result.Message);
+                        }
+                    }
+                    else if (message.PlayerIndex == index)
+                    {
+                        display.Log(result.Message);
+                    }
                     if (player.IsDead)
                     {
                         _isAlive = false;
                         break;
                     }
-                    player.UpdateNearbyEnemy();
-                    if (result.WasSuccessful || enemyresult.Count > 0)
-                    {
-                        display.Update();
-                    }
-
-                    bool wasPlayerAttacked = false;
-                    foreach (IResultType resultType in enemyresult)
-                    {
-                        if(resultType.WasAttack && ((ResultType.Attack)resultType).Target == player)
-                        {
-                            if (player.IsDead)
-                            {
-                                _isAlive = false;
-                                break;
-                            }
-                            display.Log(resultType.Message);
-                            wasPlayerAttacked = true;
-                            break;
-                        }
-                    }
-                    if (!wasPlayerAttacked && message.PlayerIndex == index)
-                    {
-                        display.Log(result.Message);
-                    }
-                    
                 }
             });
 

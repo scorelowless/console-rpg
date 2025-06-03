@@ -13,7 +13,16 @@ public static class NetworkMethods
     };
     public static async Task SendDataAsync(NetworkStream stream, object data)
     {
-        string jsonData = JsonSerializer.Serialize(data, Options);
+        await SendJsonAsync(stream, SerializeData(data));
+    }
+    
+    public static string SerializeData(object data)
+    {
+        return JsonSerializer.Serialize(data, Options);
+    }
+    
+    public static async Task SendJsonAsync(NetworkStream stream, string jsonData)
+    {
         byte[] dataBytes = System.Text.Encoding.UTF8.GetBytes(jsonData);
         byte[] lengthPrefix = BitConverter.GetBytes(dataBytes.Length);
         if (BitConverter.IsLittleEndian)
