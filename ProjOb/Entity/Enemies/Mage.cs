@@ -2,6 +2,7 @@ namespace ProjOb;
 
 public class Mage : Enemy
 {
+    public int StrategyCounter {get; set;}
     public Mage(Tile position, int index) : base("Mage", 'm', position, index)
     {
         SetStats(10,10,10,10,10,30, 5);
@@ -26,18 +27,12 @@ public class Mage : Enemy
 
     protected override void StrategyUpdate(Player _)
     {
-        int walls = 0;
-        if(!Position.Map.NextTile(Position, Direction.Up).IsNotWall) walls++;
-        if(!Position.Map.NextTile(Position, Direction.Right).IsNotWall) walls++;
-        if(!Position.Map.NextTile(Position, Direction.Down).IsNotWall) walls++;
-        if(!Position.Map.NextTile(Position, Direction.Left).IsNotWall) walls++;
-        Strategy = walls switch
+        StrategyCounter = (StrategyCounter + 1) % 9;
+        Strategy = StrategyCounter switch
         {
-            0 => new EnemyStrategyCalm(),
-            1 => new EnemyStrategyAggressive(),
-            2 => new EnemyStrategyAfraid(),
-            3 => new EnemyStrategyAggressive(),
-            4 => new EnemyStrategyCalm(),
+            < 3 => new EnemyStrategyCalm(),
+            < 6 => new EnemyStrategyAggressive(),
+            < 9 => new EnemyStrategyAfraid(),
             _ => throw new Exception("Unexpected behavior in Mage.StrategyUpdate")
         };
     }
