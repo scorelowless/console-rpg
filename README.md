@@ -31,8 +31,19 @@ Several design patterns were used in different parts of the system, including:
 - Client-Server architecture
 
 ## Running
+Make sure you have the [.NET SDK](https://dotnet.microsoft.com/download) installed and you're on Windows.
 
-TODO
+1. Clone the repository
+   ```bash
+   git clone https://github.com/scorelowless/console-rpg.git
+   cd console-rpg
+   ```
+2. Start the server in one terminal:
+   `dotnet run --project ProjOb -- --server`
+3. Start the client in second terminal
+   `dotnet run --project ProjOb -- --client`
+
+You can optionally specify a port for the server (`--server 5555`) or a server address and port for the client (`--client 127.0.0.1:5555`).
 
 ## AI disclosure
 
